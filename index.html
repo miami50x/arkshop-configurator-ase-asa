@@ -196,6 +196,95 @@
       background: #007bff;
       color: white;
     }
+
+    /* Suggestions Dropdown Styles */
+    .suggestions {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-height: 200px; /* A bit taller so images fit */
+      overflow-y: auto;
+      z-index: 10;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .suggestions-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s;
+    }
+
+    .suggestions-item:hover {
+      background-color: #f0f8ff;
+    }
+
+    .item-image {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      margin-right: 10px;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .item-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+
+    .item-path {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .item-compatibility {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      display: flex;
+      gap: 16px;
+    }
+
+    .highlighted {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .highlighted .item-title {
+      color: #fff;
+    }
+
+    .highlighted .item-path {
+      color: #eee;
+    }
+
+    /* Checkmarks and X Icons */
+    .green-check::before {
+      content: "✓";
+      color: green;
+      font-weight: bold;
+    }
+    .red-x::before {
+      content: "✗";
+      color: red;
+      font-weight: bold;
+    }
+    .item-key {
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
   </style>
   
   <!-- Include Vue -->
@@ -216,6 +305,10 @@
           acc[uniqueKey] = {
             path: value.blueprint_path || "",
             tags: [],
+            title: value.title || uniqueKey, 
+            image: "https://miami50x.github.io/arkshop-configurator-ase-asa/" + (value.image || "ark_assets_img/placeholder.webp"),
+            ase: value.ase || false,
+            asa: value.asa || false,
             class_string: ""
           };
           return acc;
@@ -241,16 +334,33 @@
             placeholder="Enter blueprint..."
             class="blueprint-input"
           />
-          <ul v-if="showDropdown && filteredBlueprints.length" 
-              class="suggestions" 
-              style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 150px; overflow-y: auto; z-index: 10; list-style: none; padding: 0; margin: 0;">
+          <ul 
+            v-if="showDropdown && filteredBlueprints.length" 
+            class="suggestions"
+          >
             <li 
-              v-for="([label, bp], index) in filteredBlueprints" 
-              :key="label"
-              :class="{'highlighted': index === highlightedIndex}"
+              v-for="([uniqueKey, bp], index) in filteredBlueprints" 
+              :key="uniqueKey"
+              :class="['suggestions-item', { 'highlighted': index === highlightedIndex }]"
               @mousedown.prevent="selectBlueprint(bp)"
-              style="padding: 5px; cursor: pointer;">
-              {{ label }}
+            >
+              <img :src="bp.image" :alt="bp.title" class="item-image" />
+              <div class="item-info">
+                <!-- 
+                  1) The transformed key line (small but bold).
+                  2) Then the item title & blueprint path as usual.
+                -->
+                <div class="item-key">{{ formatKey(uniqueKey) }}</div>
+                <div class="item-path">{{ bp.path }}</div>
+                <div class="item-compatibility">
+                  <span>
+                    ASE: <span :class="bp.ase ? 'green-check' : 'red-x'"></span>
+                  </span>
+                  <span>
+                    ASA: <span :class="bp.asa ? 'green-check' : 'red-x'"></span>
+                  </span>
+                </div>
+              </div>
             </li>
           </ul>
         </div>
@@ -273,7 +383,7 @@
       },
       computed: {
         actualBlueprintOptions() {
-          // Use the provided prop if not empty; otherwise fallback to the global variable.
+          // Use the provided prop if not empty; otherwise fallback to global var
           return (this.blueprintOptions && Object.keys(this.blueprintOptions).length > 0)
             ? this.blueprintOptions
             : (window.blueprintOptions || {});
@@ -281,8 +391,10 @@
         filteredBlueprints() {
           const entries = Object.entries(this.actualBlueprintOptions);
           if (!this.value) return entries;
-          return entries.filter(([label]) =>
-            label.toLowerCase().includes(this.value.toLowerCase())
+          return entries.filter(([key, bp]) =>
+            // Match either the key or the title
+            key.toLowerCase().includes(this.value.toLowerCase()) ||
+            (bp.title && bp.title.toLowerCase().includes(this.value.toLowerCase()))
           );
         }
       },
@@ -293,7 +405,7 @@
           this.highlightedIndex = -1;
         },
         selectBlueprint(bp) {
-          // When a suggestion is selected, update the input with the blueprint path.
+          // When a suggestion is selected, update the input with the blueprint path
           this.$emit('input', bp.path);
           this.showDropdown = false;
         },
@@ -308,7 +420,10 @@
           }
         },
         selectHighlighted() {
-          if (this.highlightedIndex >= 0 && this.highlightedIndex < this.filteredBlueprints.length) {
+          if (
+            this.highlightedIndex >= 0 && 
+            this.highlightedIndex < this.filteredBlueprints.length
+          ) {
             const bp = this.filteredBlueprints[this.highlightedIndex][1];
             this.selectBlueprint(bp);
           }
@@ -317,6 +432,14 @@
           if (!this.$el.contains(event.target)) {
             this.showDropdown = false;
           }
+        },
+        // Helper to transform the raw key 
+        // e.g. "aberrant-achatina" -> "Aberrant Achatina"
+        formatKey(keyStr) {
+          return keyStr
+            .split('-')
+            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
         }
       },
       mounted() {
@@ -326,7 +449,9 @@
         document.removeEventListener('click', this.handleClickOutside);
       }
     });
-  </script>
+    </script>
+    
+    
 </head>
 <body>
   <header>
