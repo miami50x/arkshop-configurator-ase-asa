@@ -23,7 +23,7 @@ def download_image(image_url, local_path):
 def main():
     # File and folder names
     input_json = "ark_data.json"
-    output_json = "ark_data_ase_asa_blueprints.json"
+    output_json = "ark_ase_asa_blueprints.json"
     image_folder = "ark_assets_img"
 
     # Ensure the image folder exists
