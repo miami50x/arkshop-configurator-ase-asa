@@ -335,19 +335,24 @@
   <!-- Include Vue -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
   
-  <!-- GLOBAL BLUEPRINT FETCH CHANGED -->
+  <!-- GLOBAL BLUEPRINT FETCH - MODIFIED BELOW -->
   <script>
-    // We'll store blueprint data in two ways:
-    // 1) window.blueprintOptions: a keyed dictionary (label -> { path, title, image, ase, asa, ... })
-    // 2) window.blueprintPaths: a reverse lookup (exact blueprint path -> same object) for easy thumbnail usage
-    window.blueprintOptions = {};
-    window.blueprintPaths = {}; // blueprint_path => the same blueprint object
+    /*
+      We create a small Vue instance to hold blueprint data reactively.
+      Then we fetch and store the data inside blueprintStore.
+    */
+    window.blueprintStore = new Vue({
+      data: {
+        blueprintOptions: {},
+        blueprintPaths: {}
+      }
+    });
 
+    // Fetch blueprint data and populate blueprintStore
     fetch('https://miami50x.github.io/arkshop-configurator-ase-asa/ark_ase_asa_blueprints.json')
       .then(response => response.json())
       .then(data => {
-        // data is an array of objects, each containing exactly one key
-        window.blueprintOptions = data.reduce((acc, itemObj) => {
+        const options = data.reduce((acc, itemObj) => {
           const [uniqueKey] = Object.keys(itemObj);
           const value = itemObj[uniqueKey];
 
@@ -360,23 +365,29 @@
             asa: value.asa || false,
             class_string: ""
           };
-
-          // Build the reverse lookup by exact blueprint path
-          const safePath = (acc[uniqueKey].path || "").toLowerCase();
-          if (safePath) {
-            window.blueprintPaths[safePath] = acc[uniqueKey];
-          }
-
           return acc;
         }, {});
 
-        console.log("Blueprint Options:", window.blueprintOptions);
-        console.log("Blueprint Paths (reverse lookup):", window.blueprintPaths);
+        // Create a reverse lookup for blueprint paths
+        const paths = {};
+        Object.keys(options).forEach(key => {
+          const path = options[key].path.toLowerCase();
+          if (path) {
+            paths[path] = options[key];
+          }
+        });
+
+        // Assign to blueprintStore so it's reactive
+        window.blueprintStore.blueprintOptions = options;
+        window.blueprintStore.blueprintPaths = paths;
+
+        console.log("Blueprint Options:", options);
+        console.log("Blueprint Paths (reverse lookup):", paths);
       })
       .catch(error => console.error('Error fetching blueprint data:', error));
   </script>
   
-  <!-- Global function for blueprint thumbnail lookup -->
+  <!-- Global function for blueprint thumbnail lookup - MODIFIED to use blueprintStore -->
   <script>
     // Returns the image URL (or fallback) if the blueprint path is recognized
     function getBlueprintImage(blueprintPath) {
@@ -384,15 +395,15 @@
         return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
       }
       const lookupKey = blueprintPath.toLowerCase();
-      if (window.blueprintPaths && window.blueprintPaths[lookupKey]) {
-        return window.blueprintPaths[lookupKey].image;
+      if (window.blueprintStore.blueprintPaths && window.blueprintStore.blueprintPaths[lookupKey]) {
+        return window.blueprintStore.blueprintPaths[lookupKey].image;
       }
       // Fallback if no match
       return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
     }
   </script>
 
-  <!-- Global Blueprint Input Component -->
+  <!-- Global Blueprint Input Component - MODIFIED to fallback to blueprintStore -->
   <script>
     Vue.component('blueprint-input', {
       template: `
@@ -401,7 +412,7 @@
             type="text"
             :value="value"
             @input="onInput"
-            @focus="showDropdown = true"
+            @focus="onFocus"
             @keydown.down.prevent="highlightNext"
             @keydown.up.prevent="highlightPrev"
             @keydown.enter.prevent="selectHighlighted"
@@ -440,9 +451,13 @@
           type: String,
           default: ''
         },
+        /*
+          If the parent provides blueprintOptions, we use them.
+          Otherwise, we fall back to blueprintStore.blueprintOptions for reactivity.
+        */
         blueprintOptions: {
           type: Object,
-          default: () => window.blueprintOptions || {}
+          default: () => ({})
         }
       },
       data() {
@@ -453,26 +468,42 @@
       },
       computed: {
         actualBlueprintOptions() {
-          // Use the provided prop if not empty; otherwise fallback to global var
-          return (this.blueprintOptions && Object.keys(this.blueprintOptions).length > 0)
-            ? this.blueprintOptions
-            : (window.blueprintOptions || {});
+          // If blueprintOptions is not empty, use it; otherwise fallback to blueprintStore.
+          const localKeys = Object.keys(this.blueprintOptions);
+          if (localKeys.length > 0) {
+            return this.blueprintOptions;
+          }
+          return window.blueprintStore.blueprintOptions || {};
         },
         filteredBlueprints() {
+          const query = this.value.trim().toLowerCase();
+          // If too few characters, or none at all, return an empty array
+          if (query.length < 3) {
+            return [];
+          }
+    
           const entries = Object.entries(this.actualBlueprintOptions);
-          if (!this.value) return entries;
-          return entries.filter(([key, bp]) =>
-            // Match either the key or the title
-            key.toLowerCase().includes(this.value.toLowerCase()) ||
-            (bp.title && bp.title.toLowerCase().includes(this.value.toLowerCase()))
+          // Filter by key or title
+          let filtered = entries.filter(([key, bp]) =>
+            key.toLowerCase().includes(query) ||
+            (bp.title && bp.title.toLowerCase().includes(query))
           );
+    
+          // Limit the shown results to 20
+          if (filtered.length > 20) {
+            filtered = filtered.slice(0, 20);
+          }
+          return filtered;
         }
       },
       methods: {
         onInput(e) {
           this.$emit('input', e.target.value);
-          this.showDropdown = true;
           this.highlightedIndex = -1;
+        },
+        onFocus() {
+          // Only show dropdown if we have at least 3 characters typed
+          this.showDropdown = (this.value.trim().length >= 3);
         },
         selectBlueprint(bp) {
           // When a suggestion is selected, update the input with the blueprint path
@@ -503,7 +534,7 @@
             this.showDropdown = false;
           }
         },
-        // Helper to transform the raw key 
+        // Helper to transform the raw key into a nicer title (optional)
         formatKey(keyStr) {
           return keyStr
             .split('-')
@@ -518,7 +549,8 @@
         document.removeEventListener('click', this.handleClickOutside);
       }
     });
-  </script>
+    </script>
+    
     
     
 </head>
@@ -1157,7 +1189,6 @@
     });
 
     // --- Kit Config Vue Instance ---
-    // We'll just use getBlueprintImage from the window scope for thumbnail display
     window.kitsVue = new Vue({
       el: '#kits',
       data: {
