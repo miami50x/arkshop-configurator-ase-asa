@@ -285,6 +285,51 @@
       margin-bottom: 2px;
     }
 
+    /* Thumbnail & Quantity Badge */
+    .thumbnail-container {
+      display: inline-block;
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.5rem;
+      vertical-align: middle;
+    }
+    .thumbnail-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    .quantity-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      background: #dc3545;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      line-height: 1;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* NEW: Thumbnails in the header */
+    .header-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .header-info h3 {
+      margin: 0 0 0.25rem 0;
+    }
+    .header-thumbnails {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
   
   <!-- Include Vue -->
@@ -292,32 +337,61 @@
   
   <!-- GLOBAL BLUEPRINT FETCH CHANGED -->
   <script>
-    // CHANGED: Instead of fetching from Beacon, we fetch from your custom JSON
+    // We'll store blueprint data in two ways:
+    // 1) window.blueprintOptions: a keyed dictionary (label -> { path, title, image, ase, asa, ... })
+    // 2) window.blueprintPaths: a reverse lookup (exact blueprint path -> same object) for easy thumbnail usage
     window.blueprintOptions = {};
-    fetch('https://miami50x.github.io/arkshop-configurator-ase-asa/ark_ase_asa_blueprints.json') // <--- YOUR URL
+    window.blueprintPaths = {}; // blueprint_path => the same blueprint object
+
+    fetch('https://miami50x.github.io/arkshop-configurator-ase-asa/ark_ase_asa_blueprints.json')
       .then(response => response.json())
       .then(data => {
         // data is an array of objects, each containing exactly one key
         window.blueprintOptions = data.reduce((acc, itemObj) => {
           const [uniqueKey] = Object.keys(itemObj);
           const value = itemObj[uniqueKey];
-          // We use 'uniqueKey' as our label, and store the blueprint path:
+
           acc[uniqueKey] = {
             path: value.blueprint_path || "",
             tags: [],
-            title: value.title || uniqueKey, 
+            title: value.title || uniqueKey,
             image: "https://miami50x.github.io/arkshop-configurator-ase-asa/" + (value.image || "ark_assets_img/placeholder.webp"),
             ase: value.ase || false,
             asa: value.asa || false,
             class_string: ""
           };
+
+          // Build the reverse lookup by exact blueprint path
+          const safePath = (acc[uniqueKey].path || "").toLowerCase();
+          if (safePath) {
+            window.blueprintPaths[safePath] = acc[uniqueKey];
+          }
+
           return acc;
         }, {});
+
         console.log("Blueprint Options:", window.blueprintOptions);
+        console.log("Blueprint Paths (reverse lookup):", window.blueprintPaths);
       })
       .catch(error => console.error('Error fetching blueprint data:', error));
   </script>
   
+  <!-- Global function for blueprint thumbnail lookup -->
+  <script>
+    // Returns the image URL (or fallback) if the blueprint path is recognized
+    function getBlueprintImage(blueprintPath) {
+      if (!blueprintPath) {
+        return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
+      }
+      const lookupKey = blueprintPath.toLowerCase();
+      if (window.blueprintPaths && window.blueprintPaths[lookupKey]) {
+        return window.blueprintPaths[lookupKey].image;
+      }
+      // Fallback if no match
+      return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
+    }
+  </script>
+
   <!-- Global Blueprint Input Component -->
   <script>
     Vue.component('blueprint-input', {
@@ -344,11 +418,8 @@
               :class="['suggestions-item', { 'highlighted': index === highlightedIndex }]"
               @mousedown.prevent="selectBlueprint(bp)"
             >
+              <img :src="bp.image" class="item-image" />
               <div class="item-info">
-                <!-- 
-                  1) The transformed key line (small but bold).
-                  2) Then the item title & blueprint path as usual.
-                -->
                 <div class="item-key">{{ formatKey(uniqueKey) }}</div>
                 <div class="item-path">{{ bp.path }}</div>
                 <div class="item-compatibility">
@@ -433,7 +504,6 @@
           }
         },
         // Helper to transform the raw key 
-        // e.g. "aberrant-achatina" -> "Aberrant Achatina"
         formatKey(keyStr) {
           return keyStr
             .split('-')
@@ -448,7 +518,7 @@
         document.removeEventListener('click', this.handleClickOutside);
       }
     });
-    </script>
+  </script>
     
     
 </head>
@@ -664,10 +734,37 @@
             <button class="btn btn-primary" @click="collapseAllKits">Collapse All</button>
           </div>
           <div v-for="(kit, kitId) in config.Kits" :key="kitId" class="kit-card">
+            <!-- MOVED THUMBNAILS TO HEADER -->
             <div class="collapsible-header" @click="toggleKit(kitId)">
-              <h3>{{ kitId }}</h3>
+              <div class="header-info">
+                <h3>{{ kitId }}</h3>
+                <!-- Thumbnails for Items -->
+                <div class="header-thumbnails" v-if="kit.Items && kit.Items.length">
+                  <div 
+                    v-for="(item, idx) in kit.Items" 
+                    :key="'item-' + idx" 
+                    class="thumbnail-container"
+                  >
+                    <img :src="getBlueprintImage(item.Blueprint)" :alt="item.Blueprint" />
+                    <div class="quantity-badge" v-if="item.Amount > 1">x{{ item.Amount }}</div>
+                  </div>
+                </div>
+                <!-- Thumbnails for Dinos -->
+                <div class="header-thumbnails" v-if="kit.Dinos && kit.Dinos.length">
+                  <div 
+                    v-for="(dino, idx) in kit.Dinos" 
+                    :key="'dino-' + idx" 
+                    class="thumbnail-container"
+                  >
+                    <img :src="getBlueprintImage(dino.Blueprint)" :alt="dino.Blueprint" />
+                  </div>
+                </div>
+              </div>
+              <!-- STOP EVENT TO PREVENT TOGGLE WHEN REMOVING -->
               <button class="btn btn-danger" @click.stop="removeKit(kitId)">Remove Kit</button>
             </div>
+
+            <!-- Expanded kit content (no duplicate thumbnails here) -->
             <div v-if="expandedKits[kitId]" class="kit-content">
               <div class="form-group">
                 <label>Kit ID</label>
@@ -705,7 +802,7 @@
               <div class="subsection">
                 <h4>Items</h4>
                 <button class="btn btn-success" @click="addItem(kit)">Add Item</button>
-                <div v-for="(item, index) in kit.Items" :key="index" class="item-card">
+                <div v-for="(item, index) in kit.Items" :key="index" class="item-card" style="margin-top: 1rem;">
                   <div class="form-group">
                     <label>Amount</label>
                     <input type="number" v-model.number="item.Amount" min="1">
@@ -716,7 +813,6 @@
                   </div>
                   <div class="form-group">
                     <label>Blueprint</label>
-                    <!-- Use the blueprint-input component here -->
                     <blueprint-input v-model="item.Blueprint"></blueprint-input>
                   </div>
                   <div class="form-group">
@@ -725,21 +821,20 @@
                       Force Blueprint
                     </label>
                   </div>
-                  <button class="btn btn-danger" @click="removeItem(kit, index)">Remove Item</button>
+                  <button class="btn btn-danger" style="margin-top: 0.5rem;" @click="removeItem(kit, index)">Remove Item</button>
                 </div>
               </div>
               <!-- Dinos Section -->
               <div class="subsection">
                 <h4>Dinos</h4>
                 <button class="btn btn-success" @click="addDino(kit)">Add Dino</button>
-                <div v-for="(dino, index) in kit.Dinos" :key="index" class="dino-card">
+                <div v-for="(dino, index) in kit.Dinos" :key="index" class="dino-card" style="margin-top:1rem;">
                   <div class="form-group">
                     <label>Level</label>
                     <input type="number" v-model.number="dino.Level" min="1">
                   </div>
                   <div class="form-group">
                     <label>Blueprint</label>
-                    <!-- You can also use the blueprint-input for dinos if desired -->
                     <blueprint-input v-model="dino.Blueprint"></blueprint-input>
                   </div>
                   <div class="form-group">
@@ -748,14 +843,14 @@
                       Neutered
                     </label>
                   </div>
-                  <button class="btn btn-danger" @click="removeDino(kit, index)">Remove Dino</button>
+                  <button class="btn btn-danger" style="margin-top: 0.5rem;" @click="removeDino(kit, index)">Remove Dino</button>
                 </div>
               </div>
               <!-- Commands Section -->
               <div class="subsection">
                 <h4>Commands</h4>
                 <button class="btn btn-success" @click="addCommand(kit)">Add Command</button>
-                <div v-for="(command, index) in kit.Commands" :key="index" class="command-card">
+                <div v-for="(command, index) in kit.Commands" :key="index" class="command-card" style="margin-top:1rem;">
                   <div class="form-group">
                     <label>Command</label>
                     <input type="text" v-model="command.Command">
@@ -783,8 +878,16 @@
             <button class="btn btn-primary" @click="collapseAllItems">Collapse All</button>
           </div>
           <div v-for="(item, name) in config.ShopItems" :key="name" class="item-card">
+            <!-- MOVED THUMBNAIL TO HEADER -->
             <div class="collapsible-header" @click="toggleItem(name)">
-              <h3>{{ name }} ({{ item.Type }})</h3>
+              <div class="header-info">
+                <h3>{{ name }} ({{ item.Type }})</h3>
+                <div class="header-thumbnails" v-if="item.Type === 'dino' || item.Type === 'item'">
+                  <div class="thumbnail-container">
+                    <img :src="getBlueprintImage(item.Blueprint)" :alt="item.Blueprint" />
+                  </div>
+                </div>
+              </div>
               <button class="btn btn-danger" @click.stop="removeItem(name)">Remove Item</button>
             </div>
             <div v-if="expandedItems[name]" class="item-content">
@@ -819,14 +922,28 @@
               </div>
               <div class="form-group">
                 <label>Price</label>
-                <input type="number" v-model.number="item.Price" min="0" @input="(event)=>{ if(parseFloat(event.target.value) < 0) { item.Price = 0; } }">
+                <input 
+                  type="number" 
+                  v-model.number="item.Price" 
+                  min="0"
+                  @input="(event)=>{ if(parseFloat(event.target.value) < 0) { item.Price = 0; } }"
+                >
               </div>
               <!-- Type-specific sections -->
               <div v-if="item.Type === 'dino'" class="subsection">
                 <h4>Dino Settings</h4>
                 <div class="form-group">
                   <label>Level</label>
-                  <input type="number" v-model.number="item.Level" min="1" max="1000" @input="(event)=>{ let val = parseInt(event.target.value); if(val < 1){ item.Level = 1; } else if(val > 1000){ item.Level = 1000; } }">
+                  <input 
+                    type="number" 
+                    v-model.number="item.Level" 
+                    min="1" 
+                    max="1000"
+                    @input="(event)=>{ 
+                      let val = parseInt(event.target.value); 
+                      if(val < 1){ item.Level = 1; } else if(val > 1000){ item.Level = 1000; } 
+                    }"
+                  >
                 </div>
                 <div class="form-group">
                   <label>Blueprint</label>
@@ -858,6 +975,14 @@
                   </label>
                 </div>
               </div>
+              <div v-else-if="item.Type === 'item'" class="subsection">
+                <h4>Item Settings</h4>
+                <div class="form-group">
+                  <label>Blueprint</label>
+                  <blueprint-input v-model="item.Blueprint"></blueprint-input>
+                </div>
+              </div>
+              <!-- NO DUPLICATE THUMBNAIL HERE -->
             </div>
           </div>
         </div>
@@ -874,8 +999,17 @@
             <button class="btn btn-primary" @click="collapseAllSellItems">Collapse All</button>
           </div>
           <div v-for="(sellItem, key) in config.SellItems" :key="key" class="item-card">
+            <!-- MOVED THUMBNAIL TO HEADER -->
             <div class="collapsible-header" @click="toggleSellItem(key)">
-              <h3>{{ key }} ({{ sellItem.Type }})</h3>
+              <div class="header-info">
+                <h3>{{ key }} ({{ sellItem.Type }})</h3>
+                <div class="header-thumbnails" v-if="sellItem.Blueprint">
+                  <div class="thumbnail-container">
+                    <img :src="getBlueprintImage(sellItem.Blueprint)" :alt="sellItem.Blueprint" />
+                    <div class="quantity-badge" v-if="sellItem.Amount > 1">x{{ sellItem.Amount }}</div>
+                  </div>
+                </div>
+              </div>
               <button class="btn btn-danger" @click.stop="removeSellItem(key)">Remove</button>
             </div>
             <div v-if="expandedSellItems[key]" class="item-content">
@@ -901,8 +1035,9 @@
               </div>
               <div class="form-group">
                 <label>Blueprint</label>
-                <input type="text" v-model="sellItem.Blueprint">
+                <blueprint-input v-model="sellItem.Blueprint"></blueprint-input>
               </div>
+              <!-- NO DUPLICATE THUMBNAIL HERE -->
             </div>
           </div>
         </div>
@@ -1022,6 +1157,7 @@
     });
 
     // --- Kit Config Vue Instance ---
+    // We'll just use getBlueprintImage from the window scope for thumbnail display
     window.kitsVue = new Vue({
       el: '#kits',
       data: {
@@ -1053,6 +1189,7 @@
         }
       },
       methods: {
+        getBlueprintImage,
         toggleKit(kitKey) {
           this.$set(this.expandedKits, kitKey, !this.expandedKits[kitKey]);
         },
@@ -1062,6 +1199,7 @@
             DefaultAmount: 1,
             Price: 0,
             Description: '',
+            OnlyFromSpawn: false,
             Items: [],
             Dinos: [],
             Commands: []
@@ -1102,7 +1240,8 @@
           if (!kit.Dinos) this.$set(kit, 'Dinos', []);
           kit.Dinos.push({
             Level: 1,
-            Blueprint: ''
+            Blueprint: '',
+            Neutered: false
           });
         },
         removeDino(kit, index) {
@@ -1157,7 +1296,7 @@
               PreventCryo: true,
               Permissions: ""
             }
-          }
+          },
         },
         stryderHeadTypes: {
           "-1": "Random",
@@ -1175,6 +1314,7 @@
         }
       },
       methods: {
+        getBlueprintImage,
         toggleItem(key) {
           this.$set(this.expandedItems, key, !this.expandedItems[key]);
         },
@@ -1189,10 +1329,17 @@
               break;
             case 'item':
               delete item.Level;
-              delete item.Blueprint;
               delete item.PreventCryo;
+              delete item.StryderHead;
+              delete item.StryderChest;
               break;
             default:
+              // Clear fields not used by other types
+              delete item.Level;
+              delete item.Blueprint;
+              delete item.PreventCryo;
+              delete item.StryderHead;
+              delete item.StryderChest;
               break;
           }
         },
@@ -1278,6 +1425,7 @@
         expandedSellItems: {}
       },
       methods: {
+        getBlueprintImage,
         toggleSellItem(key) {
           this.$set(this.expandedSellItems, key, !this.expandedSellItems[key]);
         },
