@@ -344,7 +344,6 @@
               :class="['suggestions-item', { 'highlighted': index === highlightedIndex }]"
               @mousedown.prevent="selectBlueprint(bp)"
             >
-              <img :src="bp.image" :alt="bp.title" class="item-image" />
               <div class="item-info">
                 <!-- 
                   1) The transformed key line (small but bold).
