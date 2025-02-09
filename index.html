@@ -188,9 +188,21 @@
     .collapsible-header:hover {
       background: #e2e6ea;
     }
+    .collapsible-content {
+      margin-left: 1.5rem;
+      margin-top: 0.5rem;
+      border-left: 3px solid #ddd;
+      padding-left: 1rem;
+    }
+
     /* Blueprint Input Styles */
-    .blueprint-input-wrapper input.blueprint-input {
-      /* Additional styling if desired */
+    .blueprint-input-wrapper {
+      position: relative;
+      display: block; /* ensures it can take full width if parent allows */
+      width: 100%;
+    }
+    .blueprint-input {
+      width: 100%; /* let the input stretch */
     }
     .suggestions li.highlighted {
       background: #007bff;
@@ -203,14 +215,13 @@
       background: #fff;
       border: 1px solid #ccc;
       width: 100%;
-      max-height: 200px; /* A bit taller so images fit */
+      max-height: 200px;
       overflow-y: auto;
       z-index: 10;
       list-style: none;
       padding: 0;
       margin: 0;
     }
-
     .suggestions-item {
       display: flex;
       align-items: center;
@@ -219,55 +230,45 @@
       border-bottom: 1px solid #eee;
       transition: background-color 0.3s;
     }
-
     .suggestions-item:hover {
       background-color: #f0f8ff;
     }
-
     .item-image {
       width: 48px;
       height: 48px;
       object-fit: contain;
       margin-right: 10px;
     }
-
     .item-info {
       display: flex;
       flex-direction: column;
       line-height: 1.2;
     }
-
     .item-title {
       font-weight: bold;
       font-size: 0.95rem;
       margin-bottom: 3px;
     }
-
     .item-path {
       font-size: 0.8rem;
       color: #666;
     }
-
     .item-compatibility {
       margin-top: 4px;
       font-size: 0.8rem;
       display: flex;
       gap: 16px;
     }
-
     .highlighted {
       background-color: #007bff;
       color: #fff;
     }
-
     .highlighted .item-title {
       color: #fff;
     }
-
     .highlighted .item-path {
       color: #eee;
     }
-
     /* Checkmarks and X Icons */
     .green-check::before {
       content: "✓";
@@ -330,25 +331,41 @@
       gap: 0.5rem;
       margin-bottom: 0.5rem;
     }
+
+    /* Permission Selector Checkbox Styles */
+    .permission-selector-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .permission-selector-container .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .permission-selector-container label {
+      font-weight: normal; /* Overwrite the global label style if desired */
+    }
   </style>
   
   <!-- Include Vue -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
   
-  <!-- GLOBAL BLUEPRINT FETCH - MODIFIED BELOW -->
+  <!-- GLOBAL BLUEPRINT FETCH -->
   <script>
-    /*
-      We create a small Vue instance to hold blueprint data reactively.
-      Then we fetch and store the data inside blueprintStore.
-    */
     window.blueprintStore = new Vue({
       data: {
         blueprintOptions: {},
-        blueprintPaths: {}
+        blueprintPaths: {},
+        // NEW: Add filters for ASE/ASA
+        blueprintFilters: {
+          includeASE: true,
+          includeASA: true
+        }
       }
     });
 
-    // Fetch blueprint data and populate blueprintStore
     fetch('https://miami50x.github.io/arkshop-configurator-ase-asa/ark_ase_asa_blueprints.json')
       .then(response => response.json())
       .then(data => {
@@ -377,19 +394,14 @@
           }
         });
 
-        // Assign to blueprintStore so it's reactive
         window.blueprintStore.blueprintOptions = options;
         window.blueprintStore.blueprintPaths = paths;
-
-        console.log("Blueprint Options:", options);
-        console.log("Blueprint Paths (reverse lookup):", paths);
       })
       .catch(error => console.error('Error fetching blueprint data:', error));
   </script>
   
-  <!-- Global function for blueprint thumbnail lookup - MODIFIED to use blueprintStore -->
+  <!-- Global function for blueprint thumbnail lookup -->
   <script>
-    // Returns the image URL (or fallback) if the blueprint path is recognized
     function getBlueprintImage(blueprintPath) {
       if (!blueprintPath) {
         return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
@@ -398,16 +410,15 @@
       if (window.blueprintStore.blueprintPaths && window.blueprintStore.blueprintPaths[lookupKey]) {
         return window.blueprintStore.blueprintPaths[lookupKey].image;
       }
-      // Fallback if no match
       return "https://miami50x.github.io/arkshop-configurator-ase-asa/ark_assets_img/placeholder.webp";
     }
   </script>
 
-  <!-- Global Blueprint Input Component - MODIFIED to fallback to blueprintStore -->
+  <!-- Global Blueprint Input Component -->
   <script>
     Vue.component('blueprint-input', {
       template: `
-        <div class="blueprint-input-wrapper" style="position: relative;">
+        <div class="blueprint-input-wrapper">
           <input
             type="text"
             :value="value"
@@ -451,10 +462,6 @@
           type: String,
           default: ''
         },
-        /*
-          If the parent provides blueprintOptions, we use them.
-          Otherwise, we fall back to blueprintStore.blueprintOptions for reactivity.
-        */
         blueprintOptions: {
           type: Object,
           default: () => ({})
@@ -468,7 +475,6 @@
       },
       computed: {
         actualBlueprintOptions() {
-          // If blueprintOptions is not empty, use it; otherwise fallback to blueprintStore.
           const localKeys = Object.keys(this.blueprintOptions);
           if (localKeys.length > 0) {
             return this.blueprintOptions;
@@ -477,19 +483,25 @@
         },
         filteredBlueprints() {
           const query = this.value.trim().toLowerCase();
-          // If too few characters, or none at all, return an empty array
-          if (query.length < 3) {
-            return [];
-          }
-    
           const entries = Object.entries(this.actualBlueprintOptions);
-          // Filter by key or title
-          let filtered = entries.filter(([key, bp]) =>
-            key.toLowerCase().includes(query) ||
-            (bp.title && bp.title.toLowerCase().includes(query))
-          );
-    
-          // Limit the shown results to 20
+
+          // Filter by key, title, or blueprint path
+          let filtered = entries.filter(([key, bp]) => {
+            const path = bp.path ? bp.path.toLowerCase() : "";
+            return (
+              key.toLowerCase().includes(query) ||
+              (bp.title && bp.title.toLowerCase().includes(query)) ||
+              (path && path.includes(query))
+            );
+          });
+
+          // Then apply the ASA/ASE filters
+          filtered = filtered.filter(([_, bp]) => {
+            const matchesASE = bp.ase && window.blueprintStore.blueprintFilters.includeASE;
+            const matchesASA = bp.asa && window.blueprintStore.blueprintFilters.includeASA;
+            return (matchesASE || matchesASA);
+          });
+
           if (filtered.length > 20) {
             filtered = filtered.slice(0, 20);
           }
@@ -500,13 +512,13 @@
         onInput(e) {
           this.$emit('input', e.target.value);
           this.highlightedIndex = -1;
+          this.showDropdown = (e.target.value.trim().length >= 3);
         },
         onFocus() {
-          // Only show dropdown if we have at least 3 characters typed
+          // Show dropdown only if at least 3 characters
           this.showDropdown = (this.value.trim().length >= 3);
         },
         selectBlueprint(bp) {
-          // When a suggestion is selected, update the input with the blueprint path
           this.$emit('input', bp.path);
           this.showDropdown = false;
         },
@@ -522,7 +534,7 @@
         },
         selectHighlighted() {
           if (
-            this.highlightedIndex >= 0 && 
+            this.highlightedIndex >= 0 &&
             this.highlightedIndex < this.filteredBlueprints.length
           ) {
             const bp = this.filteredBlueprints[this.highlightedIndex][1];
@@ -534,7 +546,6 @@
             this.showDropdown = false;
           }
         },
-        // Helper to transform the raw key into a nicer title (optional)
         formatKey(keyStr) {
           return keyStr
             .split('-')
@@ -549,10 +560,99 @@
         document.removeEventListener('click', this.handleClickOutside);
       }
     });
-    </script>
-    
-    
-    
+  </script>
+
+  <!-- NEW: Permission Selector Component -->
+  <script>
+    /*
+      permission-selector
+      - Renders known group names as checkboxes (from generalVue.config.TimedPointsReward.Groups).
+      - Also allows custom entries that are not in the known list.
+      - The final selected groups are stored as a comma-separated string (for backward compatibility).
+    */
+    Vue.component('permission-selector', {
+      template: `
+      <div>
+        <label>Permissions:</label>
+        <!-- The official checkboxes for known groups -->
+        <div class="permission-selector-container">
+          <div
+            v-for="knownGroup in knownGroups"
+            :key="knownGroup"
+            class="checkbox-group"
+          >
+            <input
+              type="checkbox"
+              :id="knownGroup"
+              :value="knownGroup"
+              v-model="selectedGroups"
+            />
+            <label :for="knownGroup">{{ knownGroup }}</label>
+          </div>
+        </div>
+        
+        <!-- Custom Input for entering other permission tags not in knownGroups -->
+        <div class="form-group" style="margin-top:1rem;">
+          <label>Add Custom Permission Group</label>
+          <input
+            type="text"
+            v-model="customPermission"
+            placeholder="Type custom group, then press Enter"
+            @keyup.enter.prevent="addCustomPermission"
+          />
+        </div>
+
+        <!-- Hidden or alternative display to show currently selected permissions -->
+        <p style="margin-top:0.5rem;">
+          <strong>Selected:</strong> {{ selectedGroups.join(', ') }}
+        </p>
+      </div>
+      `,
+      props: {
+        value: {
+          type: String,
+          default: ''
+        }
+      },
+      data() {
+        return {
+          selectedGroups: [],
+          customPermission: ''
+        };
+      },
+      computed: {
+        knownGroups() {
+          // Grabs group names from the TimedPointsReward.Groups in the general config
+          const groupsObj = window.generalVue.config.TimedPointsReward.Groups || {};
+          return Object.keys(groupsObj);
+        }
+      },
+      watch: {
+        // If parent changes 'value' externally, we parse it again
+        value: {
+          immediate: true,
+          handler(newVal) {
+            const arr = newVal.split(',').map(p => p.trim()).filter(Boolean);
+            this.selectedGroups = arr;
+          }
+        },
+        // Whenever selectedGroups changes, emit up as a comma-separated string
+        selectedGroups(newVal) {
+          this.$emit('input', newVal.join(', '));
+        }
+      },
+      methods: {
+        addCustomPermission() {
+          const trimmed = this.customPermission.trim();
+          if (trimmed && !this.selectedGroups.includes(trimmed)) {
+            this.selectedGroups.push(trimmed);
+          }
+          this.customPermission = '';
+        }
+      }
+    });
+  </script>
+
 </head>
 <body>
   <header>
@@ -572,185 +672,209 @@
     <!-- General Config Section -->
     <section id="general" class="tab-content">
       <div id="general-config-inner">
-        <!-- MySQL Settings -->
-        <div class="section">
-          <h3>MySQL Settings</h3>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.Mysql.UseMysql">
-              Use MySQL
-            </label>
+        <!-- Collapsible Panels -->
+        <div>
+          <!-- MySQL Settings -->
+          <div class="collapsible-header" @click="toggleSection('mysql')">
+            <h3>MySQL Settings</h3>
           </div>
-          <div class="subsection" v-if="config.Mysql.UseMysql">
-            <div class="form-group">
-              <label>MySQL Host</label>
-              <input type="text" v-model="config.Mysql.MysqlHost">
-            </div>
-            <div class="form-group">
-              <label>MySQL User</label>
-              <input type="text" v-model="config.Mysql.MysqlUser">
-            </div>
-            <div class="form-group">
-              <label>MySQL Password</label>
-              <input type="password" v-model="config.Mysql.MysqlPass">
-            </div>
-            <div class="form-group">
-              <label>MySQL Database</label>
-              <input type="text" v-model="config.Mysql.MysqlDB">
-            </div>
-            <div class="form-group">
-              <label>MySQL Port</label>
-              <input type="number" v-model.number="config.Mysql.MysqlPort">
-            </div>
-          </div>
-        </div>
-        <!-- Timed Points Reward -->
-        <div class="section">
-          <h3>Timed Points Reward</h3>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.TimedPointsReward.Enabled">
-              Enable Timed Points Reward
-            </label>
-          </div>
-          <div class="subsection" v-if="config.TimedPointsReward.Enabled">
+          <div v-if="expandedSections.mysql" class="collapsible-content">
             <div class="form-group">
               <label>
-                <input type="checkbox" v-model="config.TimedPointsReward.StackRewards">
-                Stack Rewards (sum of all group rewards)
+                <input type="checkbox" v-model="config.Mysql.UseMysql">
+                Use MySQL
               </label>
             </div>
-            <div class="form-group">
-              <label>
-                <input type="checkbox" v-model="config.TimedPointsReward.AlwaysSendNotifications">
-                Always Send Notifications (even for 0 points)
-              </label>
-            </div>
-            <div class="form-group">
-              <label>Interval (minutes)</label>
-              <input type="number" v-model.number="config.TimedPointsReward.Interval" min="1">
-            </div>
-            <h4>Permission Groups</h4>
-            <div class="group-list">
-              <div v-for="(group, name) in groups" :key="name" class="group-item">
-                <input 
-                  type="text" 
-                  :value="name"
-                  @blur="updateGroupName(name, $event.target.value)"
-                  placeholder="Group Name">
-                <input 
-                  type="number" 
-                  v-model.number="group.Amount" 
-                  placeholder="Points Amount" 
-                  min="0">
-                <button class="remove-btn" @click="removeGroup(name)">Remove</button>
+            <div class="subsection" v-if="config.Mysql.UseMysql">
+              <div class="form-group">
+                <label>MySQL Host</label>
+                <input type="text" v-model="config.Mysql.MysqlHost">
               </div>
-              <button class="add-btn" @click="addGroup">Add Permission Group</button>
+              <div class="form-group">
+                <label>MySQL User</label>
+                <input type="text" v-model="config.Mysql.MysqlUser">
+              </div>
+              <div class="form-group">
+                <label>MySQL Password</label>
+                <input type="password" v-model="config.Mysql.MysqlPass">
+              </div>
+              <div class="form-group">
+                <label>MySQL Database</label>
+                <input type="text" v-model="config.Mysql.MysqlDB">
+              </div>
+              <div class="form-group">
+                <label>MySQL Port</label>
+                <input type="number" v-model.number="config.Mysql.MysqlPort">
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Discord Settings -->
-        <div class="section">
-          <h3>Discord Settings</h3>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.Discord.Enabled">
-              Enable Discord Logging
-            </label>
+
+          <!-- Timed Points Reward / Permission Groups -->
+          <div class="collapsible-header" @click="toggleSection('timedPoints')">
+            <h3>Points Reward & Permission Groups</h3>
           </div>
-          <div class="subsection" v-if="config.Discord.Enabled">
+          <div v-if="expandedSections.timedPoints" class="collapsible-content">
             <div class="form-group">
-              <label>Sender Name</label>
-              <input type="text" v-model="config.Discord.SenderName">
+              <label>
+                <input type="checkbox" v-model="config.TimedPointsReward.Enabled">
+                Enable Timed Points Reward
+              </label>
+            </div>
+            <div class="subsection" v-if="config.TimedPointsReward.Enabled">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" v-model="config.TimedPointsReward.StackRewards">
+                  Stack Rewards (sum of all group rewards)
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" v-model="config.TimedPointsReward.AlwaysSendNotifications">
+                  Always Send Notifications (even for 0 points)
+                </label>
+              </div>
+              <div class="form-group">
+                <label>Interval (minutes)</label>
+                <input type="number" v-model.number="config.TimedPointsReward.Interval" min="1">
+              </div>
+
+              <!-- Permission Groups Definition -->
+              <h4>Define Permission Groups & Point Amount</h4>
+              <div class="group-list">
+                <div v-for="(group, name) in groups" :key="name" class="group-item">
+                  <input
+                    type="text"
+                    :value="name"
+                    @blur="updateGroupName(name, $event.target.value)"
+                    placeholder="Group Name"
+                  >
+                  <input
+                    type="number"
+                    v-model.number="group.Amount"
+                    placeholder="Points Amount"
+                    min="0"
+                  >
+                  <button class="remove-btn" @click="removeGroup(name)">Remove</button>
+                </div>
+                <button class="add-btn" @click="addGroup">Add Permission Group</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Discord Settings -->
+          <div class="collapsible-header" @click="toggleSection('discord')">
+            <h3>Discord Settings</h3>
+          </div>
+          <div v-if="expandedSections.discord" class="collapsible-content">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.Discord.Enabled">
+                Enable Discord Logging
+              </label>
+            </div>
+            <div class="subsection" v-if="config.Discord.Enabled">
+              <div class="form-group">
+                <label>Sender Name</label>
+                <input type="text" v-model="config.Discord.SenderName">
+              </div>
+              <div class="form-group">
+                <label>Webhook URL</label>
+                <input type="text" v-model="config.Discord.URL">
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Settings -->
+          <div class="collapsible-header" @click="toggleSection('basic')">
+            <h3>Basic Settings</h3>
+          </div>
+          <div v-if="expandedSections.basic" class="collapsible-content">
+            <div class="form-group">
+              <label>Items Per Page</label>
+              <input type="number" v-model.number="config.ItemsPerPage" min="1">
             </div>
             <div class="form-group">
-              <label>Webhook URL</label>
-              <input type="text" v-model="config.Discord.URL">
+              <label>Shop Display Time (seconds)</label>
+              <input type="number" v-model.number="config.ShopDisplayTime" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+              <label>Shop Text Size</label>
+              <input type="number" v-model.number="config.ShopTextSize" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+              <label>Database Path Override</label>
+              <input type="text" v-model="config.DbPathOverride">
+            </div>
+            <div class="form-group">
+              <label>Default Kit</label>
+              <input type="text" v-model="config.DefaultKit">
             </div>
           </div>
-        </div>
-        <!-- Basic Settings -->
-        <div class="section">
-          <h3>Basic Settings</h3>
-          <div class="form-group">
-            <label>Items Per Page</label>
-            <input type="number" v-model.number="config.ItemsPerPage" min="1">
+
+          <!-- Dino Settings -->
+          <div class="collapsible-header" @click="toggleSection('dino')">
+            <h3>Dino Settings</h3>
           </div>
-          <div class="form-group">
-            <label>Shop Display Time (seconds)</label>
-            <input type="number" v-model.number="config.ShopDisplayTime" step="0.1" min="0">
+          <div v-if="expandedSections.dino" class="collapsible-content">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.GiveDinosInCryopods">
+                Give Dinos in Cryopods
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.UseSoulTraps">
+                Use Soul Traps (Dino Storage V2)
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.CryoLimitedTime">
+                Cryo Limited Time (60 min)
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Cryo Item Path</label>
+              <input type="text" v-model="config.CryoItemPath">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Shop Text Size</label>
-            <input type="number" v-model.number="config.ShopTextSize" step="0.1" min="0">
+
+          <!-- Trade & Usage Settings -->
+          <div class="collapsible-header" @click="toggleSection('tradeUsage')">
+            <h3>Trade & Usage Settings</h3>
           </div>
-          <div class="form-group">
-            <label>Database Path Override</label>
-            <input type="text" v-model="config.DbPathOverride">
-          </div>
-          <div class="form-group">
-            <label>Default Kit</label>
-            <input type="text" v-model="config.DefaultKit">
-          </div>
-        </div>
-        <!-- Dino Settings -->
-        <div class="section">
-          <h3>Dino Settings</h3>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.GiveDinosInCryopods">
-              Give Dinos in Cryopods
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.UseSoulTraps">
-              Use Soul Traps (Dino Storage V2)
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.CryoLimitedTime">
-              Cryo Limited Time (60 min)
-            </label>
-          </div>
-          <div class="form-group">
-            <label>Cryo Item Path</label>
-            <input type="text" v-model="config.CryoItemPath">
-          </div>
-        </div>
-        <!-- Trade & Usage Settings -->
-        <div class="section">
-          <h3>Trade & Usage Settings</h3>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.UseOriginalTradeCommandWithUI">
-              Use Original Trade Command With UI
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.PreventUseNoglin">
-              Prevent Use While Controlled by Noglin
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.PreventUseUnconscious">
-              Prevent Use While Unconscious
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.PreventUseHandcuffed">
-              Prevent Use While Handcuffed
-            </label>
-          </div>
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="config.PreventUseCarried">
-              Prevent Use While Carried
-            </label>
+          <div v-if="expandedSections.tradeUsage" class="collapsible-content">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.UseOriginalTradeCommandWithUI">
+                Use Original Trade Command With UI
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.PreventUseNoglin">
+                Prevent Use While Controlled by Noglin
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.PreventUseUnconscious">
+                Prevent Use While Unconscious
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.PreventUseHandcuffed">
+                Prevent Use While Handcuffed
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" v-model="config.PreventUseCarried">
+                Prevent Use While Carried
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -766,11 +890,9 @@
             <button class="btn btn-primary" @click="collapseAllKits">Collapse All</button>
           </div>
           <div v-for="(kit, kitId) in config.Kits" :key="kitId" class="kit-card">
-            <!-- MOVED THUMBNAILS TO HEADER -->
             <div class="collapsible-header" @click="toggleKit(kitId)">
               <div class="header-info">
                 <h3>{{ kitId }}</h3>
-                <!-- Thumbnails for Items -->
                 <div class="header-thumbnails" v-if="kit.Items && kit.Items.length">
                   <div 
                     v-for="(item, idx) in kit.Items" 
@@ -781,7 +903,6 @@
                     <div class="quantity-badge" v-if="item.Amount > 1">x{{ item.Amount }}</div>
                   </div>
                 </div>
-                <!-- Thumbnails for Dinos -->
                 <div class="header-thumbnails" v-if="kit.Dinos && kit.Dinos.length">
                   <div 
                     v-for="(dino, idx) in kit.Dinos" 
@@ -792,11 +913,9 @@
                   </div>
                 </div>
               </div>
-              <!-- STOP EVENT TO PREVENT TOGGLE WHEN REMOVING -->
               <button class="btn btn-danger" @click.stop="removeKit(kitId)">Remove Kit</button>
             </div>
 
-            <!-- Expanded kit content (no duplicate thumbnails here) -->
             <div v-if="expandedKits[kitId]" class="kit-content">
               <div class="form-group">
                 <label>Kit ID</label>
@@ -814,27 +933,37 @@
                 <label>Description</label>
                 <textarea v-model="kit.Description" rows="2"></textarea>
               </div>
-              <div class="form-group">
-                <label>Permissions (comma-separated)</label>
-                <input type="text" v-model="kit.Permissions">
-                <div class="permissions-tags">
-                  <div v-for="perm in getPermissionArray(kit.Permissions)" :key="perm" class="permission-tag">
-                    {{ perm }}
-                    <span @click="removePermission(kit, perm)" style="cursor: pointer;">×</span>
-                  </div>
-                </div>
-              </div>
+
+              <!-- Use the new permission-selector -->
+              <permission-selector v-model="kit.Permissions"></permission-selector>
+
               <div class="form-group">
                 <label>
                   <input type="checkbox" v-model="kit.OnlyFromSpawn">
                   Only From Spawn
                 </label>
               </div>
+
               <!-- Items Section -->
               <div class="subsection">
                 <h4>Items</h4>
                 <button class="btn btn-success" @click="addItem(kit)">Add Item</button>
-                <div v-for="(item, index) in kit.Items" :key="index" class="item-card" style="margin-top: 1rem;">
+                <!-- Updated styling to match “nested item” look from Shop Items -->
+                <div 
+                  v-for="(item, index) in kit.Items" 
+                  :key="index" 
+                  style="margin-top:1rem; border:1px solid #ccc; padding:1rem; border-radius:6px;"
+                >
+                  <div class="form-group">
+                    <label>Blueprint</label>
+                    <div style="display:flex; align-items:center;">
+                      <img 
+                        :src="getBlueprintImage(item.Blueprint)"
+                        style="width:40px; height:40px; margin-right:8px;" 
+                      />
+                      <blueprint-input style="flex:1;" v-model="item.Blueprint"></blueprint-input>
+                    </div>
+                  </div>
                   <div class="form-group">
                     <label>Amount</label>
                     <input type="number" v-model.number="item.Amount" min="1">
@@ -842,10 +971,6 @@
                   <div class="form-group">
                     <label>Quality</label>
                     <input type="number" v-model.number="item.Quality" min="0">
-                  </div>
-                  <div class="form-group">
-                    <label>Blueprint</label>
-                    <blueprint-input v-model="item.Blueprint"></blueprint-input>
                   </div>
                   <div class="form-group">
                     <label>
@@ -856,18 +981,30 @@
                   <button class="btn btn-danger" style="margin-top: 0.5rem;" @click="removeItem(kit, index)">Remove Item</button>
                 </div>
               </div>
+
               <!-- Dinos Section -->
               <div class="subsection">
                 <h4>Dinos</h4>
                 <button class="btn btn-success" @click="addDino(kit)">Add Dino</button>
-                <div v-for="(dino, index) in kit.Dinos" :key="index" class="dino-card" style="margin-top:1rem;">
+                <!-- Also give each dino a similar card style -->
+                <div 
+                  v-for="(dino, index) in kit.Dinos" 
+                  :key="index"
+                  style="margin-top:1rem; border:1px solid #ccc; padding:1rem; border-radius:6px;"
+                >
                   <div class="form-group">
                     <label>Level</label>
                     <input type="number" v-model.number="dino.Level" min="1">
                   </div>
                   <div class="form-group">
                     <label>Blueprint</label>
-                    <blueprint-input v-model="dino.Blueprint"></blueprint-input>
+                    <div style="display:flex; align-items:center;">
+                      <img 
+                        :src="getBlueprintImage(dino.Blueprint)"
+                        style="width:40px; height:40px; margin-right:8px;" 
+                      />
+                      <blueprint-input style="flex:1;" v-model="dino.Blueprint"></blueprint-input>
+                    </div>
                   </div>
                   <div class="form-group">
                     <label>
@@ -878,11 +1015,16 @@
                   <button class="btn btn-danger" style="margin-top: 0.5rem;" @click="removeDino(kit, index)">Remove Dino</button>
                 </div>
               </div>
+
               <!-- Commands Section -->
               <div class="subsection">
                 <h4>Commands</h4>
                 <button class="btn btn-success" @click="addCommand(kit)">Add Command</button>
-                <div v-for="(command, index) in kit.Commands" :key="index" class="command-card" style="margin-top:1rem;">
+                <div 
+                  v-for="(command, index) in kit.Commands" 
+                  :key="index" 
+                  style="margin-top:1rem; border:1px solid #ccc; padding:1rem; border-radius:6px;"
+                >
                   <div class="form-group">
                     <label>Command</label>
                     <input type="text" v-model="command.Command">
@@ -910,17 +1052,26 @@
             <button class="btn btn-primary" @click="collapseAllItems">Collapse All</button>
           </div>
           <div v-for="(item, name) in config.ShopItems" :key="name" class="item-card">
-            <!-- MOVED THUMBNAIL TO HEADER -->
             <div class="collapsible-header" @click="toggleItem(name)">
               <div class="header-info">
                 <h3>{{ name }} ({{ item.Type }})</h3>
-                <div class="header-thumbnails" v-if="item.Type === 'dino' || item.Type === 'item'">
-                  <div class="thumbnail-container">
+                <div class="header-thumbnails" v-if="item.Type === 'dino'">
+                  <div class="thumbnail-container" v-if="item.Blueprint">
                     <img :src="getBlueprintImage(item.Blueprint)" :alt="item.Blueprint" />
                   </div>
                 </div>
+                <div class="header-thumbnails" v-if="item.Type === 'item' && item.Items && item.Items.length">
+                  <div 
+                    v-for="(sub, idx) in item.Items" 
+                    :key="idx" 
+                    class="thumbnail-container"
+                  >
+                    <img :src="getBlueprintImage(sub.Blueprint)" :alt="sub.Blueprint" />
+                    <div class="quantity-badge" v-if="sub.Amount > 1">x{{ sub.Amount }}</div>
+                  </div>
+                </div>
               </div>
-              <button class="btn btn-danger" @click.stop="removeItem(name)">Remove Item</button>
+              <button class="btn btn-danger" @click.stop="removeShopItem(name)">Remove Item</button>
             </div>
             <div v-if="expandedItems[name]" class="item-content">
               <div class="form-group">
@@ -938,16 +1089,10 @@
                   <option value="command">Command</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label>Permissions (comma-separated)</label>
-                <input type="text" v-model="item.Permissions">
-                <div class="permissions-tags">
-                  <div v-for="perm in getPermissionArray(item.Permissions)" :key="perm" class="permission-tag">
-                    {{ perm }}
-                    <span @click="removePermission(item, perm)" style="cursor: pointer;">×</span>
-                  </div>
-                </div>
-              </div>
+
+              <!-- Use permission-selector here as well -->
+              <permission-selector v-model="item.Permissions"></permission-selector>
+
               <div class="form-group">
                 <label>Description</label>
                 <textarea v-model="item.Description" rows="2"></textarea>
@@ -961,7 +1106,8 @@
                   @input="(event)=>{ if(parseFloat(event.target.value) < 0) { item.Price = 0; } }"
                 >
               </div>
-              <!-- Type-specific sections -->
+
+              <!-- Dino Settings -->
               <div v-if="item.Type === 'dino'" class="subsection">
                 <h4>Dino Settings</h4>
                 <div class="form-group">
@@ -979,7 +1125,14 @@
                 </div>
                 <div class="form-group">
                   <label>Blueprint</label>
-                  <blueprint-input v-model="item.Blueprint"></blueprint-input>
+                  <!-- UPDATED LAYOUT: image on the left, bigger size, input takes full width -->
+                  <div style="display:flex; align-items:center;">
+                    <img 
+                      :src="getBlueprintImage(item.Blueprint)" 
+                      style="width:40px; height:40px; margin-right:8px;" 
+                    />
+                    <blueprint-input style="flex:1;" v-model="item.Blueprint"></blueprint-input>
+                  </div>
                 </div>
                 <div v-if="item.Blueprint && item.Blueprint.toLowerCase().includes('tekstrider')" class="stryder-section">
                   <h5>Stryder Configuration</h5>
@@ -1007,14 +1160,43 @@
                   </label>
                 </div>
               </div>
+
+              <!-- Multiple-Items Settings -->
               <div v-else-if="item.Type === 'item'" class="subsection">
-                <h4>Item Settings</h4>
-                <div class="form-group">
-                  <label>Blueprint</label>
-                  <blueprint-input v-model="item.Blueprint"></blueprint-input>
+                <h4>Item(s) Settings</h4>
+                <button class="btn btn-success" @click="addSubItem(name)">Add Item</button>
+                <div 
+                  v-for="(subItem, idx) in item.Items" 
+                  :key="idx"
+                  style="margin-top:1rem; border:1px solid #ccc; padding:1rem; border-radius:6px;"
+                >
+                  <div class="form-group">
+                    <label>Blueprint</label>
+                    <div style="display:flex; align-items:center;">
+                      <img 
+                        :src="getBlueprintImage(subItem.Blueprint)" 
+                        style="width:40px; height:40px; margin-right:8px;" 
+                      />
+                      <blueprint-input style="flex:1;" v-model="subItem.Blueprint"></blueprint-input>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" v-model.number="subItem.Amount" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Quality</label>
+                    <input type="number" v-model.number="subItem.Quality" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label>
+                      <input type="checkbox" v-model="subItem.ForceBlueprint">
+                      Force Blueprint
+                    </label>
+                  </div>
+                  <button class="btn btn-danger" @click="removeSubItem(name, idx)">Remove</button>
                 </div>
               </div>
-              <!-- NO DUPLICATE THUMBNAIL HERE -->
             </div>
           </div>
         </div>
@@ -1031,7 +1213,6 @@
             <button class="btn btn-primary" @click="collapseAllSellItems">Collapse All</button>
           </div>
           <div v-for="(sellItem, key) in config.SellItems" :key="key" class="item-card">
-            <!-- MOVED THUMBNAIL TO HEADER -->
             <div class="collapsible-header" @click="toggleSellItem(key)">
               <div class="header-info">
                 <h3>{{ key }} ({{ sellItem.Type }})</h3>
@@ -1067,9 +1248,14 @@
               </div>
               <div class="form-group">
                 <label>Blueprint</label>
-                <blueprint-input v-model="sellItem.Blueprint"></blueprint-input>
+                <div style="display:flex; align-items:center;">
+                  <img 
+                    :src="getBlueprintImage(sellItem.Blueprint)" 
+                    style="width:40px; height:40px; margin-right:8px;" 
+                  />
+                  <blueprint-input style="flex:1;" v-model="sellItem.Blueprint"></blueprint-input>
+                </div>
               </div>
-              <!-- NO DUPLICATE THUMBNAIL HERE -->
             </div>
           </div>
         </div>
@@ -1108,13 +1294,27 @@
       <textarea v-model="jsonInput" rows="10" style="width: 100%;" placeholder="Paste your JSON configuration here"></textarea>
       <button class="btn btn-primary" @click="loadJSON">Load JSON</button>
     </section>
+
+    <!-- NEW: Blueprint Filter Section -->
+    <section id="blueprint-filters">
+      <h2>Blueprint Filters</h2>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="blueprintStore.blueprintFilters.includeASE">
+          Include ASE
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="blueprintStore.blueprintFilters.includeASA">
+          Include ASA
+        </label>
+      </div>
+    </section>
   </div>
 
-  <!-- Vue Instances -->
+  <!-- Tab Navigation Script -->
   <script>
-    // --------------------------
-    // Tab Navigation Logic
-    // --------------------------
     document.querySelectorAll("header nav ul.tabs li").forEach(tab => {
       tab.addEventListener("click", function () {
         document.querySelectorAll("header nav ul.tabs li").forEach(t => t.classList.remove("active"));
@@ -1124,11 +1324,22 @@
         document.getElementById(tabId).classList.remove("hidden");
       });
     });
+  </script>
 
+  <!-- Vue Instances -->
+  <script>
     // --- General Config Vue Instance ---
     window.generalVue = new Vue({
       el: '#general',
       data: {
+        expandedSections: {
+          mysql: true,
+          timedPoints: true,
+          discord: false,
+          basic: false,
+          dino: false,
+          tradeUsage: false
+        },
         config: {
           Mysql: {
             UseMysql: false,
@@ -1143,7 +1354,10 @@
             StackRewards: false,
             AlwaysSendNotifications: false,
             Interval: 30,
-            Groups: { "Default": { Amount: 20 } }
+            Groups: {
+              "Default": { Amount: 20 },
+              "VIP": { Amount: 50 }
+            }
           },
           Discord: {
             Enabled: false,
@@ -1172,6 +1386,9 @@
         }
       },
       methods: {
+        toggleSection(sectionName) {
+          this.$set(this.expandedSections, sectionName, !this.expandedSections[sectionName]);
+        },
         addGroup() {
           const groupName = `Group-${Object.keys(this.groups).length + 1}`;
           this.$set(this.groups, groupName, { Amount: 20 });
@@ -1181,6 +1398,10 @@
         },
         updateGroupName(oldName, newName) {
           if (oldName === newName || !newName.trim()) return;
+          if (this.groups.hasOwnProperty(newName)) {
+            alert("Group name already exists");
+            return;
+          }
           const groupData = this.groups[oldName];
           this.$delete(this.groups, oldName);
           this.$set(this.groups, newName, groupData);
@@ -1200,6 +1421,7 @@
               Price: 90,
               Description: 'Starter kit (carno with saddle)',
               OnlyFromSpawn: true,
+              Permissions: "Default",
               Items: [
                 {
                   Amount: 1,
@@ -1211,13 +1433,14 @@
               Dinos: [
                 {
                   Level: 10,
-                  Blueprint: "Blueprint'/Game/PrimalEarth/Dinos/Carno/Carno_Character_BP.Carno_Character_BP'"
+                  Blueprint: "Blueprint'/Game/PrimalEarth/Dinos/Carno/Carno_Character_BP.Carno_Character_BP'",
+                  Neutered: false
                 }
               ],
               Commands: []
             }
           }
-        }
+        },
       },
       methods: {
         getBlueprintImage,
@@ -1231,6 +1454,7 @@
             Price: 0,
             Description: '',
             OnlyFromSpawn: false,
+            Permissions: '',
             Items: [],
             Dinos: [],
             Commands: []
@@ -1288,13 +1512,6 @@
         removeCommand(kit, index) {
           kit.Commands.splice(index, 1);
         },
-        getPermissionArray(permissions) {
-          return permissions ? permissions.split(',').map(p => p.trim()).filter(p => p) : [];
-        },
-        removePermission(kit, permission) {
-          const permissions = this.getPermissionArray(kit.Permissions);
-          kit.Permissions = permissions.filter(p => p !== permission).join(', ');
-        },
         expandAllKits() {
           Object.keys(this.config.Kits).forEach(kitKey => {
             this.$set(this.expandedKits, kitKey, true);
@@ -1325,7 +1542,7 @@
               StryderHead: 0,
               StryderChest: 3,
               PreventCryo: true,
-              Permissions: ""
+              Permissions: "VIP"
             }
           },
         },
@@ -1352,26 +1569,55 @@
         handleTypeChange(key, newType) {
           const item = this.config.ShopItems[key];
           item.Type = newType;
-          switch(newType) {
-            case 'dino':
-              if (!item.Level) item.Level = 1;
-              if (!item.Blueprint) item.Blueprint = '';
-              if (item.PreventCryo === undefined) item.PreventCryo = false;
-              break;
-            case 'item':
-              delete item.Level;
-              delete item.PreventCryo;
-              delete item.StryderHead;
-              delete item.StryderChest;
-              break;
-            default:
-              // Clear fields not used by other types
-              delete item.Level;
-              delete item.Blueprint;
-              delete item.PreventCryo;
-              delete item.StryderHead;
-              delete item.StryderChest;
-              break;
+
+          // Minimal cleanup if type changes
+          if (newType === 'dino') {
+            delete item.Items;
+            if (!item.Blueprint) item.Blueprint = '';
+            if (!item.Level) item.Level = 1;
+            if (typeof item.PreventCryo === 'undefined') item.PreventCryo = false;
+            delete item.Quality;
+            delete item.ForceBlueprint;
+            delete item.Amount;
+            delete item.StryderHead;
+            delete item.StryderChest;
+          } else if (newType === 'item') {
+            // We'll keep or create an Items array
+            if (!Array.isArray(item.Items)) {
+              // If any single blueprint fields exist, move them into a sub array
+              const singleBlueprint = item.Blueprint || '';
+              const amt = item.Amount || 1;
+              const qual = item.Quality || 0;
+              const fb = item.ForceBlueprint || false;
+              item.Items = [
+                {
+                  Blueprint: singleBlueprint,
+                  Amount: amt,
+                  Quality: qual,
+                  ForceBlueprint: fb
+                }
+              ];
+            }
+            // Clean up single blueprint fields
+            delete item.Blueprint;
+            delete item.Amount;
+            delete item.Quality;
+            delete item.ForceBlueprint;
+            delete item.Level;
+            delete item.PreventCryo;
+            delete item.StryderHead;
+            delete item.StryderChest;
+          } else {
+            // beacon, experience, unlockengram, command => remove item/dino fields
+            delete item.Items;
+            delete item.Blueprint;
+            delete item.Level;
+            delete item.PreventCryo;
+            delete item.StryderHead;
+            delete item.StryderChest;
+            delete item.Quality;
+            delete item.ForceBlueprint;
+            delete item.Amount;
           }
         },
         updateShopItemName(oldName, newName) {
@@ -1389,13 +1635,6 @@
           this.$delete(this.expandedItems, oldName);
           this.$set(this.expandedItems, newName, expanded);
         },
-        getPermissionArray(permissions) {
-          return permissions ? permissions.split(',').map(p => p.trim()).filter(p => p) : [];
-        },
-        removePermission(item, permission) {
-          const permissions = this.getPermissionArray(item.Permissions);
-          item.Permissions = permissions.filter(p => p !== permission).join(', ');
-        },
         addItem() {
           let baseName = "new_item";
           let newName = baseName;
@@ -1406,24 +1645,45 @@
           }
           const newItem = {
             name: newName,
-            Type: "dino",
+            Type: "item",
             Description: "",
             Price: 0,
             Permissions: "",
-            Level: 1,
-            Blueprint: "",
-            PreventCryo: false
+            Items: [
+              {
+                Blueprint: "",
+                Amount: 1,
+                Quality: 0,
+                ForceBlueprint: false
+              }
+            ]
           };
           this.$set(this.config.ShopItems, newName, newItem);
           this.$set(this.expandedItems, newName, true);
         },
-        removeItem(key) {
+        removeShopItem(key) {
           if (confirm("Are you sure you want to remove this item?")) {
             this.$delete(this.config.ShopItems, key);
             if (this.expandedItems.hasOwnProperty(key)) {
               this.$delete(this.expandedItems, key);
             }
           }
+        },
+        addSubItem(shopItemKey) {
+          const item = this.config.ShopItems[shopItemKey];
+          if (!Array.isArray(item.Items)) {
+            this.$set(item, "Items", []);
+          }
+          item.Items.push({
+            Blueprint: "",
+            Amount: 1,
+            Quality: 0,
+            ForceBlueprint: false
+          });
+        },
+        removeSubItem(shopItemKey, idx) {
+          const item = this.config.ShopItems[shopItemKey];
+          item.Items.splice(idx, 1);
         },
         expandAllItems() {
           Object.keys(this.config.ShopItems).forEach(key => {
@@ -1614,12 +1874,12 @@
     window.completeConfigVue = new Vue({
       el: '#configApp',
       data: {
-        jsonInput: ""
+        jsonInput: "",
+        blueprintStore: window.blueprintStore
       },
       computed: {
         combinedConfig() {
           const gen = window.generalVue.config;
-          const shopItems = { ...window.shopItemsVue.config.ShopItems };
           return {
             Mysql: gen.Mysql,
             General: {
@@ -1641,7 +1901,7 @@
               PreventUseCarried: gen.PreventUseCarried
             },
             Kits: window.kitsVue.config.Kits,
-            ShopItems: shopItems,
+            ShopItems: window.shopItemsVue.config.ShopItems,
             SellItems: window.sellItemsVue.config.SellItems,
             Messages: window.messagesVue.config.Messages
           };
@@ -1659,32 +1919,90 @@
         loadJSON() {
           try {
             const data = JSON.parse(this.jsonInput);
+            
+            // MySQL + General
             if (data.Mysql) {
               window.generalVue.config.Mysql = data.Mysql;
             }
             if (data.General) {
               Object.assign(window.generalVue.config, data.General);
             }
+
+            // Kits
             if (data.Kits) {
-              for (const key in data.Kits) {
-                if (data.Kits[key].hasOwnProperty('id')) {
-                  delete data.Kits[key].id;
+              /*
+                Similar to Shop Items, if a kit used to have a single item blueprint,
+                we'll migrate it to an Items array. This covers older config structures.
+              */
+              Object.entries(data.Kits).forEach(([kitKey, kitObj]) => {
+                // If there's no Items array but we do see single fields, create an array
+                if (!Array.isArray(kitObj.Items) && (kitObj.Blueprint || kitObj.Amount || kitObj.Quality || kitObj.ForceBlueprint)) {
+                  // Migrate older single fields into new structure
+                  const arr = [];
+                  arr.push({
+                    Blueprint: kitObj.Blueprint || '',
+                    Amount: kitObj.Amount || 1,
+                    Quality: kitObj.Quality || 0,
+                    ForceBlueprint: !!kitObj.ForceBlueprint
+                  });
+                  kitObj.Items = arr;
+                  // Remove old single keys
+                  delete kitObj.Blueprint;
+                  delete kitObj.Amount;
+                  delete kitObj.Quality;
+                  delete kitObj.ForceBlueprint;
                 }
-              }
+                // Make sure Items, Dinos, Commands are arrays
+                if (!Array.isArray(kitObj.Items)) kitObj.Items = [];
+                if (!Array.isArray(kitObj.Dinos)) kitObj.Dinos = [];
+                if (!Array.isArray(kitObj.Commands)) kitObj.Commands = [];
+              });
               window.kitsVue.config.Kits = data.Kits;
               window.kitsVue.expandedKits = {};
             }
+
+            // ShopItems
             if (data.ShopItems) {
+              // Convert single blueprint fields to an Items array for item type
+              Object.entries(data.ShopItems).forEach(([key, item]) => {
+                if (item.Type === 'item') {
+                  if (!Array.isArray(item.Items)) {
+                    const arr = [];
+                    if (item.Blueprint || item.Amount || item.Quality || item.ForceBlueprint) {
+                      arr.push({
+                        Blueprint: item.Blueprint || '',
+                        Amount: item.Amount || 1,
+                        Quality: item.Quality || 0,
+                        ForceBlueprint: !!item.ForceBlueprint
+                      });
+                    }
+                    item.Items = arr;
+                  }
+                  delete item.Blueprint;
+                  delete item.Amount;
+                  delete item.Quality;
+                  delete item.ForceBlueprint;
+                  delete item.Level;
+                  delete item.PreventCryo;
+                  delete item.StryderHead;
+                  delete item.StryderChest;
+                }
+              });
               window.shopItemsVue.config.ShopItems = data.ShopItems;
               window.shopItemsVue.expandedItems = {};
             }
+
+            // SellItems
             if (data.SellItems) {
               window.sellItemsVue.config.SellItems = data.SellItems;
               window.sellItemsVue.expandedSellItems = {};
             }
+
+            // Messages
             if (data.Messages) {
               window.messagesVue.config.Messages = data.Messages;
             }
+
             alert("Configuration loaded successfully!");
             this.jsonInput = "";
           } catch (err) {
