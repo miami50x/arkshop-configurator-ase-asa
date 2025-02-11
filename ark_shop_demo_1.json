@@ -1,0 +1,1354 @@
+{
+    "Mysql": {
+      "UseMysql": true,
+      "MysqlHost": "localhost",
+      "MysqlUser": "xxxxxxxxxxxxxx",
+      "MysqlPass": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "MysqlDB": "xxxxxxxxxxxxxxxxx",
+      "MysqlPort": 3306
+    },
+    "General": {
+      "TimedPointsReward": {
+        "Enabled": true,
+        "Interval": 10,
+        "StackRewards": false,
+        "Groups": {
+          "Default": {
+            "Amount": 100
+          },
+          "Alpha": {
+            "Amount": 300
+          },
+          "Ascended": {
+            "Amount": 750
+          }
+        }
+      },
+      "Discord": {
+        "Enabled": true,
+        "SenderName": "Best Shop",
+        "URL": ""
+      },
+      "ItemsPerPage": 20,
+      "ShopDisplayTime": 15,
+      "ShopTextSize": 1.3,
+      "DbPathOverride": "",
+      "DefaultKit": "",
+      "GiveDinosInCryopods": true,
+      "UseSoulTraps": false,
+      "CryoLimitedTime": false,
+      "CryoItemPath": "",
+      "UseOriginalTradeCommandWithUI": true,
+      "PreventUseNoglin": true,
+      "PreventUseUnconscious": true,
+      "PreventUseHandcuffed": true,
+      "PreventUseCarried": true
+    },
+    "Kits": {
+      "starterwaterbase": {
+        "Description": "",
+        "DefaultAmount": 1,
+        "Items": [
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/BuildingBases/PrimalItemStructure_UnderwaterBase.PrimalItemStructure_UnderwaterBase'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Turret.PrimalItemStructure_Turret'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 15,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Element.PrimalItemResource_Element'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_TekGenerator.PrimalItemStructure_TekGenerator'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "raided": {
+        "Description": "",
+        "DefaultAmount": 0,
+        "Dinos": [
+          {
+            "Level": 300,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP'"
+          },
+          {
+            "Level": 300,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ptero/Ptero_Character_BP.Ptero_Character_BP'"
+          },
+          {
+            "Level": 300,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Argentavis/Argent_Character_BP.Argent_Character_BP'"
+          }
+        ],
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 2,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/Genesis/Weapons/MiningDrill/PrimalItem_WeaponMiningDrill.PrimalItem_WeaponMiningDrill'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/BuildingBases/PrimalItemStructure_UnderwaterBase.PrimalItemStructure_UnderwaterBase'"
+          },
+          {
+            "Amount": 15,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Element.PrimalItemResource_Element'"
+          },
+          {
+            "Amount": 5000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Gasoline.PrimalItemResource_Gasoline'"
+          },
+          {
+            "Amount": 5000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Gasoline.PrimalItemResource_Gasoline'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 19,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_AnkyloSaddle.PrimalItemArmor_AnkyloSaddle'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 19,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_PteroSaddle.PrimalItemArmor_PteroSaddle'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 19,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_ArgentavisSaddle.PrimalItemArmor_ArgentavisSaddle'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_StorageBox_Huge.PrimalItemStructure_StorageBox_Huge'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_StorageBox_Huge.PrimalItemStructure_StorageBox_Huge'"
+          },
+          {
+            "Amount": 100,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Metal/PrimalItemStructure_MetalFloor.PrimalItemStructure_MetalFloor'"
+          },
+          {
+            "Amount": 100,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Metal/PrimalItemStructure_MetalFloor.PrimalItemStructure_MetalFloor'"
+          },
+          {
+            "Amount": 15,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_HeavyTurret.PrimalItemStructure_HeavyTurret'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1000,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_TekGenerator.PrimalItemStructure_TekGenerator'"
+          },
+          {
+            "Amount": 2,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Bed_Modern.PrimalItemStructure_Bed_Modern'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_AnvilBench.PrimalItemStructure_AnvilBench'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_TekReplicator.PrimalItemStructure_TekReplicator'"
+          },
+          {
+            "Amount": 3,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Fabricator.PrimalItemStructure_Fabricator'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Industrialforge.PrimalItemStructure_Industrialforge'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Grinder.PrimalItemStructure_Grinder'"
+          }
+        ],
+        "Commands": []
+      },
+      "tools": {
+        "Description": "",
+        "DefaultAmount": 3,
+        "Price": 125,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponMetalPick.PrimalItem_WeaponMetalPick'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponMetalHatchet.PrimalItem_WeaponMetalHatchet'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "starterpvp": {
+        "Description": "",
+        "DefaultAmount": 2,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/ScorchedEarth/WeaponWhip/PrimalItem_WeaponWhip.PrimalItem_WeaponWhip'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalHelmet.PrimalItemArmor_MetalHelmet'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalShirt.PrimalItemArmor_MetalShirt'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalPants.PrimalItemArmor_MetalPants'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalBoots.PrimalItemArmor_MetalBoots'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalGloves.PrimalItemArmor_MetalGloves'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponMachinedSniper.PrimalItem_WeaponMachinedSniper'"
+          },
+          {
+            "Amount": 45,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedBullet.PrimalItemAmmo_AdvancedBullet'"
+          },
+          {
+            "Amount": 45,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedSniperBullet.PrimalItemAmmo_AdvancedSniperBullet'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Silencer.PrimalItemWeaponAttachment_Silencer'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Silencer.PrimalItemWeaponAttachment_Silencer'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 4,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponMachinedPistol.PrimalItem_WeaponMachinedPistol'"
+          },
+          {
+            "Amount": 15,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Consumables/PrimalItemConsumable_HealSoup.PrimalItemConsumable_HealSoup'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Consumables/PrimalItemConsumable_Soup_ShadowSteak.PrimalItemConsumable_Soup_ShadowSteak'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "starterbase": {
+        "Description": "",
+        "DefaultAmount": 2,
+        "Items": [
+          {
+            "Amount": 3,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_IceBox.PrimalItemStructure_IceBox'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/Aberration/Structures/CliffPlatforms/Metal_CliffPlatform/PrimalItemStructure_Metal_CliffPlatform.PrimalItemStructure_Metal_CliffPlatform'"
+          },
+          {
+            "Amount": 40,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Metal/PrimalItemStructure_MetalPillar.PrimalItemStructure_MetalPillar'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Bed_Simple.PrimalItemStructure_Bed_Simple'"
+          },
+          {
+            "Amount": 40,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Metal/PrimalItemStructure_MetalFloor.PrimalItemStructure_MetalFloor'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_AnvilBench.PrimalItemStructure_AnvilBench'"
+          },
+          {
+            "Amount": 5,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Turret.PrimalItemStructure_Turret'"
+          },
+          {
+            "Amount": 500,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "starterpt": {
+        "Description": "",
+        "DefaultAmount": 2,
+        "Dinos": [
+          {
+            "Level": 240,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ptero/Ptero_Character_BP.Ptero_Character_BP'"
+          }
+        ],
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_PteroSaddle.PrimalItemArmor_PteroSaddle'"
+          }
+        ],
+        "Commands": []
+      },
+      "starteranky": {
+        "Description": "",
+        "DefaultAmount": 2,
+        "Dinos": [
+          {
+            "Level": 240,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP'"
+          }
+        ],
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_AnkyloSaddle.PrimalItemArmor_AnkyloSaddle'"
+          }
+        ],
+        "Commands": []
+      },
+      "scuba": {
+        "Description": "",
+        "DefaultAmount": 1,
+        "Price": 500,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 10,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/SCUBA/PrimalItemArmor_ScubaShirt_SuitWithTank.PrimalItemArmor_ScubaShirt_SuitWithTank'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 10,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/SCUBA/PrimalItemArmor_ScubaHelmet_Goggles.PrimalItemArmor_ScubaHelmet_Goggles'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 10,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/SCUBA/PrimalItemArmor_ScubaBoots_Flippers.PrimalItemArmor_ScubaBoots_Flippers'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 10,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/SCUBA/PrimalItemArmor_ScubaPants.PrimalItemArmor_ScubaPants'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "flak": {
+        "Description": "",
+        "DefaultAmount": 3,
+        "Price": 1500,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalHelmet.PrimalItemArmor_MetalHelmet'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalShirt.PrimalItemArmor_MetalShirt'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalPants.PrimalItemArmor_MetalPants'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalBoots.PrimalItemArmor_MetalBoots'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Metal/PrimalItemArmor_MetalGloves.PrimalItemArmor_MetalGloves'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "craft": {
+        "Description": "",
+        "DefaultAmount": 1,
+        "Price": 500,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_IndustrialForge.PrimalItemStructure_IndustrialForge'"
+          },
+          {
+            "Amount": 2500,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Gasoline.PrimalItemResource_Gasoline'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_Fabricator.PrimalItemStructure_Fabricator'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Misc/PrimalItemStructure_ChemBench.PrimalItemStructure_ChemBench'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "navigation": {
+        "Description": "NAVIGATION KIT",
+        "DefaultAmount": 3,
+        "Price": 150,
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Test/PrimalItem_WeaponSpyglass.PrimalItem_WeaponSpyglass'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/ScorchedEarth/WeaponElectronicBinoculars/PrimalItem_WeaponElectronicBinoculars.PrimalItem_WeaponElectronicBinoculars'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Test/PrimalItem_WeaponGPS.PrimalItem_WeaponGPS'"
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      },
+      "tame": {
+        "Description": "",
+        "DefaultAmount": 2,
+        "Price": 500,
+        "Items": [
+          {
+            "Amount": 250,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_RefinedTranqDart.PrimalItemAmmo_RefinedTranqDart'"
+          },
+          {
+            "Amount": 10,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Consumables/PrimalItemConsumable_Kibble_Base_Special.PrimalItemConsumable_Kibble_Base_Special'"
+          },
+          {
+            "Amount": 10,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponBola.PrimalItem_WeaponBola'"
+          },
+          {
+            "Amount": 10,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Stone/PrimalItemStructure_StoneGateframe.PrimalItemStructure_StoneGateframe'"
+          },
+          {
+            "Amount": 4,
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Structures/Stone/PrimalItemStructure_StoneGate.PrimalItemStructure_StoneGate'"
+          },
+          {
+            "Quality": 0,
+            "ForceBlueprint": false,
+            "Amount": 5,
+            "Blueprint": "Blueprint'/Game/Extinction/CoreBlueprints/Weapons/PrimalItem_WeaponEmptyCryopod.PrimalItem_WeaponEmptyCryopod'"
+          },
+          {
+            "Amount": 1,
+            "Quality": 5,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponOneShotRifle.PrimalItem_WeaponOneShotRifle'"
+          }
+        ],
+        "Commands": [],
+        "Dinos": []
+      },
+      "tekraptor": {
+        "Description": "",
+        "DefaultAmount": 1,
+        "Dinos": [
+          {
+            "Level": 250,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Raptor/BionicRaptor_Character_BP.BionicRaptor_Character_BP'"
+          }
+        ],
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 5,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_RaptorSaddle.PrimalItemArmor_RaptorSaddle'"
+          }
+        ],
+        "Commands": []
+      },
+      "starterargy": {
+        "Description": "STARTER ARGY",
+        "DefaultAmount": 1,
+        "Dinos": [
+          {
+            "Level": 240,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Argentavis/Argent_Character_BP.Argent_Character_BP'"
+          }
+        ],
+        "Items": [
+          {
+            "Amount": 1,
+            "Quality": 3,
+            "ForceBlueprint": false,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_ArgentavisSaddle.PrimalItemArmor_ArgentavisSaddle'"
+          }
+        ],
+        "Commands": []
+      },
+      "5arbbp": {
+        "Description": "5 ARB BP",
+        "DefaultAmount": 0,
+        "Items": [
+          {
+            "Quality": 1,
+            "Amount": 1,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'",
+            "ForceBlueprint": true
+          },
+          {
+            "Quality": 1,
+            "Amount": 1,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'",
+            "ForceBlueprint": true
+          },
+          {
+            "Quality": 1,
+            "Amount": 1,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'",
+            "ForceBlueprint": true
+          },
+          {
+            "Quality": 1,
+            "Amount": 1,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'",
+            "ForceBlueprint": true
+          },
+          {
+            "Quality": 1,
+            "Amount": 1,
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet'",
+            "ForceBlueprint": true
+          }
+        ],
+        "Dinos": [],
+        "Commands": []
+      }
+    },
+    "ShopItems": {
+      "Anglerfish": {
+        "name": "Anglerfish",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Anglerfish/Angler_Character_BP_Aberrant.Angler_Character_BP_Aberrant'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Ankylo": {
+        "name": "Ankylo",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Arthropluera": {
+        "name": "Arthropluera",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Arthropluera/Arthro_Character_BP.Arthro_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Baryonyx": {
+        "name": "Baryonyx",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Baryonyx/Baryonyx_Character_BP.Baryonyx_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Dimorphodon": {
+        "name": "Dimorphodon",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Dimorphodon/Dimorph_Character_BP.Dimorph_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Direbear": {
+        "name": "Direbear",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Direbear/Direbear_Character_BP.Direbear_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Dodo": {
+        "name": "Dodo",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Dodo/ZombieDodo_Character_BP.ZombieDodo_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Doedicurus": {
+        "name": "Doedicurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "DungBeetle": {
+        "name": "DungBeetle",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/DungBeetle/DungBeetle_Character_BP.DungBeetle_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Eel": {
+        "name": "Eel",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Eel/Eel_Character_BP.Eel_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Equus": {
+        "name": "Equus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Equus/Equus_Character_BP_Unicorn.Equus_Character_BP_Unicorn'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Iguanodon": {
+        "name": "Iguanodon",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Iguanodon/Iguanodon_Character_BP.Iguanodon_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Lystrosaurus": {
+        "name": "Lystrosaurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP.Lystro_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Oviraptor": {
+        "name": "Oviraptor",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Oviraptor/Oviraptor_Character_BP.Oviraptor_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Paraceratherium": {
+        "name": "Paraceratherium",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Paraceratherium/Paracer_Character_BP.Paracer_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Para": {
+        "name": "Para",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Para/BionicPara_Character_BP.BionicPara_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Purlovia": {
+        "name": "Purlovia",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Raptor": {
+        "name": "Raptor",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Raptor/BionicRaptor_Character_BP.BionicRaptor_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Spino": {
+        "name": "Spino",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Spino/Spino_Character_BP.Spino_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Trike": {
+        "name": "Trike",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Trike/trike_Character_BP.Trike_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Allosaurus": {
+        "name": "Allosaurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Allosaurus/Allo_Character_BP.Allo_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Basilisk": {
+        "name": "Basilisk",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/Aberration/Dinos/Basilisk/Ghost_Basilisk_Character_BP.Ghost_Basilisk_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Megalodon": {
+        "name": "Megalodon",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Megalodon/Megalodon_Character_BP.Megalodon_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Mosasaurus": {
+        "name": "Mosasaurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Mosasaurus/Mosa_Character_BP_Cave.Mosa_Character_BP_Cave'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Rex": {
+        "name": "Rex",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Rex/Rex_Character_BP.Rex_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Tusoteuthis": {
+        "name": "Tusoteuthis",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Tusoteuthis/Tusoteuthis_Character_BP_Caves.Tusoteuthis_Character_BP_Caves'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Argentavis": {
+        "name": "Argentavis",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Argentavis/Argent_Character_BP.Argent_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Basilosaurus": {
+        "name": "Basilosaurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Basilosaurus/Basilosaurus_Character_BP.Basilosaurus_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Bee": {
+        "name": "Bee",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Chalicotherium": {
+        "name": "Chalicotherium",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Chalicotherium/Chalico_Character_BP.Chalico_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "RockGolem": {
+        "name": "RockGolem",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/ScorchedEarth/Dinos/RockGolem/RubbleGolem_Character_BP.RubbleGolem_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Daeodon": {
+        "name": "Daeodon",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Daeodon/Daeodon_Character_BP.Daeodon_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Direwolf": {
+        "name": "Direwolf",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Direwolf/Ghost_Direwolf_Character_BP.Ghost_Direwolf_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Mammoth": {
+        "name": "Mammoth",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Megatherium": {
+        "name": "Megatherium",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Megatherium/Megatherium_Character_BP.Megatherium_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Phoenix": {
+        "name": "Phoenix",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/ScorchedEarth/Dinos/Phoenix/Phoenix_Character_BP.Phoenix_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Procoptodon": {
+        "name": "Procoptodon",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Procoptodon/Procoptodon_Character_BP.Procoptodon_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Ptero": {
+        "name": "Ptero",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Ptero/Ptero_Character_BP.Ptero_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "WoollyRhino": {
+        "name": "WoollyRhino",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/WoollyRhino/Rhino_Character_BP.Rhino_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Saber": {
+        "name": "Saber",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Saber/Saber_Character_BP.Saber_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Tapejara": {
+        "name": "Tapejara",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Tapejara/Tapejara_Character_BP.Tapejara_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Therizinosaurus": {
+        "name": "Therizinosaurus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Therizinosaurus/Therizino_Character_BP.Therizino_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Thylacoleo": {
+        "name": "Thylacoleo",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Thylacoleo/Thylacoleo_Character_BP.Thylacoleo_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "HoneyBee": {
+        "name": "HoneyBee",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/Mods/CrystalIsles/Assets/Dinos/HoneyBee/HoneyBee_Character_BP.HoneyBee_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Yutyrannus": {
+        "name": "Yutyrannus",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Yutyrannus/Yutyrannus_Character_BP.Yutyrannus_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Carbo": {
+        "name": "Carbo",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Turtle/Turtle_Character_BP.Turtle_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Ovis": {
+        "name": "Ovis",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Sheep/Sheep_Character_BP.Sheep_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Tek Stego": {
+        "name": "Tek Stego",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Stego/BionicStego_Character_BP.BionicStego_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Snow Owl": {
+        "name": "Snow Owl",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/Extinction/Dinos/Owl/Owl_Character_BP.Owl_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Giga": {
+        "name": "Giga",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Giganotosaurus/Gigant_Character_BP.Gigant_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Mana": {
+        "name": "Mana",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/Extinction/Dinos/IceJumper/IceJumper_Character_BP.IceJumper_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Quetz": {
+        "name": "Quetz",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/PrimalEarth/Dinos/Quetzalcoatlus/Quetz_Character_BP.Quetz_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Velonasaur": {
+        "name": "Velonasaur",
+        "Type": "dino",
+        "Description": "",
+        "Level": 150,
+        "Price": 1,
+        "Blueprint": "Blueprint'/Game/Extinction/Dinos/Spindles/Spindles_Character_BP.Spindles_Character_BP'",
+        "PreventCryo": true,
+        "Permissions": ""
+      },
+      "Element": {
+        "name": "Element",
+        "Type": "item",
+        "Description": "",
+        "Price": 1000,
+        "Permissions": "",
+        "Items": [
+          {
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Element.PrimalItemResource_Element'",
+            "Amount": 100,
+            "Quality": 0,
+            "ForceBlueprint": false
+          },
+          {
+            "Blueprint": "Blueprint'/Game/PrimalEarth/CoreBlueprints/Resources/PrimalItemResource_Element.PrimalItemResource_Element'",
+            "Amount": 100,
+            "Quality": 0,
+            "ForceBlueprint": false
+          }
+        ]
+      }
+    },
+    "SellItems": {},
+    "Messages": {
+      "Sender": "ArkShop",
+      "BoughtItem": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought item</>",
+      "BoughtDino": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought dino</>",
+      "BoughtBeacon": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought beacon</>",
+      "BoughtExp": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought experience</>",
+      "ReceivedPoints": "<RichColor Color=\"1, 1, 0, 1\">You have received {0} points! (total: {1})</>",
+      "ReceivedNoPoints": "<RichColor Color=\"1, 1, 0, 1\">You are not earning points currently!</>",
+      "HavePoints": "You have {0} points",
+      "NoPoints": "<RichColor Color=\"1, 0, 0, 1\">You don't have enough points</>",
+      "WrongId": "<RichColor Color=\"1, 0, 0, 1\">Wrong id</>",
+      "NoPermissionsKit": "<RichColor Color=\"1, 0, 0, 1\">You don't have permission to use this kit</>",
+      "CantBuyKit": "<RichColor Color=\"1, 0, 0, 1\">You can't buy this kit</>",
+      "BoughtKit": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought {0} kit</>",
+      "AvailableKits": "Available kits for you:",
+      "NoKits": "No available kits",
+      "KitsLeft": "You have {0} {1} kits left",
+      "NoKitsLeft": "You don't have {0} kits left",
+      "CantGivePoints": "<RichColor Color=\"1, 0, 0, 1\">You can't give points to yourself</>",
+      "RidingDino": "<RichColor Color=\"1, 0, 0, 1\">You can't buy this item while riding a dino</>",
+      "SentPoints": "<RichColor Color=\"0, 1, 0, 1\">You have successfully sent {0} points to {1}</>",
+      "GotPoints": "You have received {0} points from {1}",
+      "NoPlayer": "<RichColor Color=\"1, 0, 0, 1\">Player doesn't exist</>",
+      "FoundMorePlayers": "<RichColor Color=\"1, 0, 0, 1\">Found more than one player with the given name</>",
+      "BuyUsage": "Usage: /buy id amount",
+      "ShopUsage": "Usage: /shop page",
+      "KitUsage": "Usage: /kit KitName",
+      "BuyKitUsage": "Usage: /BuyKit KitName amount",
+      "TradeUsage": "Usage: /trade 'Player Name' amount",
+      "PointsCmd": "/points",
+      "TradeCmd": "/trade",
+      "BuyCmd": "/buy",
+      "ShopCmd": "/shop",
+      "KitCmd": "/kit",
+      "BuyKitCmd": "/buykit",
+      "SellCmd": "/sell",
+      "ShopSellCmd": "/shopsell",
+      "SellUsage": "Usage: /sell id amount",
+      "NotEnoughItems": "<RichColor Color=\"1, 0, 0, 1\">You don't have enough items ({0}/{1})</>",
+      "SoldItems": "<RichColor Color=\"0, 1, 0, 1\">You have successfully sold items</>",
+      "BadLevel": "<RichColor Color=\"1, 0, 0, 1\">Required level: {0} - {1}</>",
+      "KitsListPrice": "Price: {0}",
+      "KitsListFormat": "\"{0}\" - {1}. {2} left. {3}\n",
+      "StoreListDino": "{0}) {1}. Level: {2}. Id: {3}. Price: {4}\n",
+      "StoreListItem": "{0}) {1}. Id: {2}. Price: {3}\n",
+      "StoreListFormat": "{0}",
+      "OnlyOnSpawnKit": "This kit can be used only on spawn",
+      "HelpCmd": "/shophelp",
+      "ShopMessage": "Usage: /buy id amount",
+      "HelpMessage": "This is shop help message",
+      "RefundError": "Points refunded due to an error",
+      "ShopFindCmd": "/shopfind",
+      "ShopFindUsage": "Usage: /shopfind searchterm",
+      "ShopFindNotFound": "No items matched your search",
+      "ShopFindTooManyResults": "Too many results to display refine your search term",
+      "NoPermissionsStore": "<RichColor Color=\"1, 0, 0, 1\">You don't have permission to buy this {0}!</>",
+      "InventoryIsFull": "<RichColor Color=\"1, 0, 0, 1\">Unable to redeem your kit, inventory full!</>"
+    }
+  }
