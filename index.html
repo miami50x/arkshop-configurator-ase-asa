@@ -948,7 +948,6 @@
               <div class="subsection">
                 <h4>Items</h4>
                 <button class="btn btn-success" @click="addItem(kit)">Add Item</button>
-                <!-- Updated styling to match “nested item” look from Shop Items -->
                 <div 
                   v-for="(item, index) in kit.Items" 
                   :key="index" 
@@ -986,7 +985,6 @@
               <div class="subsection">
                 <h4>Dinos</h4>
                 <button class="btn btn-success" @click="addDino(kit)">Add Dino</button>
-                <!-- Also give each dino a similar card style -->
                 <div 
                   v-for="(dino, index) in kit.Dinos" 
                   :key="index"
@@ -1055,8 +1053,8 @@
             <div class="collapsible-header" @click="toggleItem(name)">
               <div class="header-info">
                 <h3>{{ name }} ({{ item.Type }})</h3>
-                <div class="header-thumbnails" v-if="item.Type === 'dino'">
-                  <div class="thumbnail-container" v-if="item.Blueprint">
+                <div class="header-thumbnails" v-if="item.Type === 'dino' && item.Blueprint">
+                  <div class="thumbnail-container">
                     <img :src="getBlueprintImage(item.Blueprint)" :alt="item.Blueprint" />
                   </div>
                 </div>
@@ -1090,7 +1088,6 @@
                 </select>
               </div>
 
-              <!-- Use permission-selector here as well -->
               <permission-selector v-model="item.Permissions"></permission-selector>
 
               <div class="form-group">
@@ -1125,7 +1122,6 @@
                 </div>
                 <div class="form-group">
                   <label>Blueprint</label>
-                  <!-- UPDATED LAYOUT: image on the left, bigger size, input takes full width -->
                   <div style="display:flex; align-items:center;">
                     <img 
                       :src="getBlueprintImage(item.Blueprint)" 
@@ -1293,9 +1289,11 @@
       <h2>Load JSON Configuration</h2>
       <textarea v-model="jsonInput" rows="10" style="width: 100%;" placeholder="Paste your JSON configuration here"></textarea>
       <button class="btn btn-primary" @click="loadJSON">Load JSON</button>
+      <!-- CHANGED: Replaced the "Load Demo Config" button with "Clear Config" -->
+      <button class="btn btn-primary" @click="clearConfig">Clear Config</button>
     </section>
 
-    <!-- NEW: Blueprint Filter Section -->
+    <!-- NEW: Blueprint Filter Section + Links to commented JSON -->
     <section id="blueprint-filters">
       <h2>Blueprint Filters</h2>
       <div class="form-group">
@@ -1309,6 +1307,29 @@
           <input type="checkbox" v-model="blueprintStore.blueprintFilters.includeASA">
           Include ASA
         </label>
+      </div>
+
+      <!-- Links to commented configs -->
+      <div style="margin-top: 1rem;">
+        <p>Commented Config Examples:</p>
+        <ul>
+          <li>
+            <a 
+              href="https://miami50x.github.io/arkshop-configurator-ase-asa/ark_ase_commented.json" 
+              target="_blank" rel="noopener noreferrer"
+            >
+              Commented ASE Config JSON
+            </a>
+          </li>
+          <li>
+            <a 
+              href="https://miami50x.github.io/arkshop-configurator-ase-asa/ark_asa_commented.json" 
+              target="_blank" rel="noopener noreferrer"
+            >
+              Commented ASA Config JSON
+            </a>
+          </li>
+        </ul>
       </div>
     </section>
   </div>
@@ -1340,44 +1361,42 @@
           dino: false,
           tradeUsage: false
         },
+        // All defaults removed / set to blank or minimal
         config: {
           Mysql: {
             UseMysql: false,
-            MysqlHost: "localhost",
-            MysqlUser: "apitest",
-            MysqlPass: "12345",
-            MysqlDB: "apitest",
-            MysqlPort: 3306
+            MysqlHost: "",
+            MysqlUser: "",
+            MysqlPass: "",
+            MysqlDB: "",
+            MysqlPort: 0
           },
           TimedPointsReward: {
-            Enabled: true,
+            Enabled: false,
             StackRewards: false,
             AlwaysSendNotifications: false,
-            Interval: 30,
-            Groups: {
-              "Default": { Amount: 20 },
-              "VIP": { Amount: 50 }
-            }
+            Interval: 0,
+            Groups: {}
           },
           Discord: {
             Enabled: false,
-            SenderName: "ArkShop",
+            SenderName: "",
             URL: ""
           },
-          ItemsPerPage: 15,
-          ShopDisplayTime: 15.0,
-          ShopTextSize: 1.3,
+          ItemsPerPage: 0,
+          ShopDisplayTime: 0,
+          ShopTextSize: 0,
           DbPathOverride: "",
           DefaultKit: "",
-          GiveDinosInCryopods: true,
+          GiveDinosInCryopods: false,
           UseSoulTraps: false,
           CryoLimitedTime: false,
           CryoItemPath: "",
           UseOriginalTradeCommandWithUI: false,
-          PreventUseNoglin: true,
-          PreventUseUnconscious: true,
-          PreventUseHandcuffed: true,
-          PreventUseCarried: true
+          PreventUseNoglin: false,
+          PreventUseUnconscious: false,
+          PreventUseHandcuffed: false,
+          PreventUseCarried: false
         }
       },
       computed: {
@@ -1391,7 +1410,7 @@
         },
         addGroup() {
           const groupName = `Group-${Object.keys(this.groups).length + 1}`;
-          this.$set(this.groups, groupName, { Amount: 20 });
+          this.$set(this.groups, groupName, { Amount: 0 });
         },
         removeGroup(groupName) {
           this.$delete(this.groups, groupName);
@@ -1414,33 +1433,10 @@
       el: '#kits',
       data: {
         expandedKits: {},
+        // Empty kits by default
         config: {
-          Kits: {
-            starter: {
-              DefaultAmount: 2,
-              Price: 90,
-              Description: 'Starter kit (carno with saddle)',
-              OnlyFromSpawn: true,
-              Permissions: "Default",
-              Items: [
-                {
-                  Amount: 1,
-                  Quality: 0,
-                  ForceBlueprint: false,
-                  Blueprint: "Blueprint'/Game/PrimalEarth/CoreBlueprints/Items/Armor/Saddles/PrimalItemArmor_CarnoSaddle.PrimalItemArmor_CarnoSaddle'"
-                }
-              ],
-              Dinos: [
-                {
-                  Level: 10,
-                  Blueprint: "Blueprint'/Game/PrimalEarth/Dinos/Carno/Carno_Character_BP.Carno_Character_BP'",
-                  Neutered: false
-                }
-              ],
-              Commands: []
-            }
-          }
-        },
+          Kits: {}
+        }
       },
       methods: {
         getBlueprintImage,
@@ -1450,7 +1446,7 @@
         addKit() {
           const newKitKey = `kit_${Object.keys(this.config.Kits).length + 1}`;
           this.$set(this.config.Kits, newKitKey, {
-            DefaultAmount: 1,
+            DefaultAmount: 0,
             Price: 0,
             Description: '',
             OnlyFromSpawn: false,
@@ -1530,21 +1526,9 @@
       el: '#shopitems',
       data: {
         expandedItems: {},
+        // Empty shop items by default
         config: {
-          ShopItems: {
-            "stryder": {
-              name: "stryder",
-              Type: "dino",
-              Description: "Stryder Mining Drill/Saddlebags",
-              Level: 150,
-              Price: 1,
-              Blueprint: "Blueprint'/Game/Genesis2/Dinos/TekStrider/TekStrider_Character_BP.TekStrider_Character_BP'",
-              StryderHead: 0,
-              StryderChest: 3,
-              PreventCryo: true,
-              Permissions: "VIP"
-            }
-          },
+          ShopItems: {}
         },
         stryderHeadTypes: {
           "-1": "Random",
@@ -1584,21 +1568,17 @@
           } else if (newType === 'item') {
             // We'll keep or create an Items array
             if (!Array.isArray(item.Items)) {
-              // If any single blueprint fields exist, move them into a sub array
-              const singleBlueprint = item.Blueprint || '';
-              const amt = item.Amount || 1;
-              const qual = item.Quality || 0;
-              const fb = item.ForceBlueprint || false;
-              item.Items = [
-                {
-                  Blueprint: singleBlueprint,
-                  Amount: amt,
-                  Quality: qual,
-                  ForceBlueprint: fb
-                }
-              ];
+              const arr = [];
+              if (item.Blueprint || item.Amount || item.Quality || item.ForceBlueprint) {
+                arr.push({
+                  Blueprint: item.Blueprint || '',
+                  Amount: item.Amount || 1,
+                  Quality: item.Quality || 0,
+                  ForceBlueprint: !!item.ForceBlueprint
+                });
+              }
+              item.Items = arr;
             }
-            // Clean up single blueprint fields
             delete item.Blueprint;
             delete item.Amount;
             delete item.Quality;
@@ -1703,15 +1683,7 @@
       el: '#sellitems',
       data: {
         config: {
-          SellItems: {
-            "metal": {
-              Type: "item",
-              Description: "100x stone",
-              Price: 10,
-              Amount: 100,
-              Blueprint: "Blueprint'/Game/Mods/Stack50/Resources/PrimalItemResource_Stone_Child.PrimalItemResource_Stone_Child'"
-            }
-          }
+          SellItems: {}
         },
         expandedSellItems: {}
       },
@@ -1775,64 +1747,7 @@
       el: '#messages',
       data: {
         config: {
-          Messages: {
-            "Sender": "ArkShop",
-            "BoughtItem": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought item</>",
-            "BoughtDino": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought dino</>",
-            "BoughtBeacon": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought beacon</>",
-            "BoughtExp": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought experience</>",
-            "ReceivedPoints": "<RichColor Color=\"1, 1, 0, 1\">You have received {0} points! (total: {1})</>",
-            "ReceivedNoPoints": "<RichColor Color=\"1, 1, 0, 1\">You are not earning points currently!</>",
-            "HavePoints": "You have {0} points",
-            "NoPoints": "<RichColor Color=\"1, 0, 0, 1\">You don't have enough points</>",
-            "WrongId": "<RichColor Color=\"1, 0, 0, 1\">Wrong id</>",
-            "NoPermissionsKit": "<RichColor Color=\"1, 0, 0, 1\">You don't have permission to use this kit</>",
-            "CantBuyKit": "<RichColor Color=\"1, 0, 0, 1\">You can't buy this kit</>",
-            "BoughtKit": "<RichColor Color=\"0, 1, 0, 1\">You have successfully bought {0} kit</>",
-            "AvailableKits": "Available kits for you:",
-            "NoKits": "No available kits",
-            "KitsLeft": "You have {0} {1} kits left",
-            "NoKitsLeft": "You don't have {0} kits left",
-            "CantGivePoints": "<RichColor Color=\"1, 0, 0, 1\">You can't give points to yourself</>",
-            "RidingDino": "<RichColor Color=\"1, 0, 0, 1\">You can't buy this item while riding a dino</>",
-            "SentPoints": "<RichColor Color=\"0, 1, 0, 1\">You have successfully sent {0} points to {1}</>",
-            "GotPoints": "You have received {0} points from {1}",
-            "NoPlayer": "<RichColor Color=\"1, 0, 0, 1\">Player doesn't exist</>",
-            "FoundMorePlayers": "<RichColor Color=\"1, 0, 0, 1\">Found more than one player with the given name</>",
-            "BuyUsage": "Usage: /buy id amount",
-            "ShopUsage": "Usage: /shop page",
-            "KitUsage": "Usage: /kit KitName",
-            "BuyKitUsage": "Usage: /BuyKit KitName amount",
-            "TradeUsage": "Usage: /trade 'Player Name' amount",
-            "PointsCmd": "/points",
-            "TradeCmd": "/trade",
-            "BuyCmd": "/buy",
-            "ShopCmd": "/shop",
-            "KitCmd": "/kit",
-            "BuyKitCmd": "/buykit",
-            "SellCmd": "/sell",
-            "ShopSellCmd": "/shopsell",
-            "SellUsage": "Usage: /sell id amount",
-            "NotEnoughItems": "<RichColor Color=\"1, 0, 0, 1\">You don't have enough items ({0}/{1})</>",
-            "SoldItems": "<RichColor Color=\"0, 1, 0, 1\">You have successfully sold items</>",
-            "BadLevel": "<RichColor Color=\"1, 0, 0, 1\">Required level: {0} - {1}</>",
-            "KitsListPrice": "Price: {0}",
-            "KitsListFormat": "\"{0}\" - {1}. {2} left. {3}\n",
-            "StoreListDino": "{0}) {1}. Level: {2}. Id: {3}. Price: {4}\n",
-            "StoreListItem": "{0}) {1}. Id: {2}. Price: {3}\n",
-            "StoreListFormat": "{0}",
-            "OnlyOnSpawnKit": "This kit can be used only on spawn",
-            "HelpCmd": "/shophelp",
-            "ShopMessage": "Usage: /buy id amount",
-            "HelpMessage": "This is shop help message",
-            "RefundError": "Points refunded due to an error",
-            "ShopFindCmd": "/shopfind",
-            "ShopFindUsage": "Usage: /shopfind searchterm",
-            "ShopFindNotFound": "No items matched your search",
-            "ShopFindTooManyResults": "Too many results to display refine your search term",
-            "NoPermissionsStore": "<RichColor Color=\"1, 0, 0, 1\">You don't have permission to buy this {0}!</>",
-            "InventoryIsFull": "<RichColor Color=\"1, 0, 0, 1\">Unable to redeem your kit, inventory full!</>"
-          }
+          Messages: {}
         }
       },
       computed: {
@@ -1910,6 +1825,10 @@
           return JSON.stringify(this.combinedConfig, null, 2);
         }
       },
+      mounted() {
+        // CHANGED: Automatically load the demo config on mount, no alerts on success
+        this.loadDemoConfig();
+      },
       methods: {
         copyJSON() {
           navigator.clipboard.writeText(this.jsonOutput)
@@ -1919,7 +1838,70 @@
         loadJSON() {
           try {
             const data = JSON.parse(this.jsonInput);
-            
+            this.applyJSON(data);
+            this.jsonInput = "";
+          } catch (err) {
+            alert("Error loading JSON configuration: " + err.message);
+          }
+        },
+        // CHANGED: No alert inside loadDemoConfig -> applyJSON
+        loadDemoConfig() {
+          fetch('https://miami50x.github.io/arkshop-configurator-ase-asa/ark_shop_demo_1.json')
+            .then(response => response.json())
+            .then(data => {
+              this.applyJSON(data);
+            })
+            .catch(err => console.error("Error fetching demo config: " + err.message));
+        },
+        // CHANGED: Clear config method
+        clearConfig() {
+          // Reset all sub-configs to minimal/empty defaults
+          window.generalVue.config = {
+            Mysql: {
+              UseMysql: false,
+              MysqlHost: "",
+              MysqlUser: "",
+              MysqlPass: "",
+              MysqlDB: "",
+              MysqlPort: 0
+            },
+            TimedPointsReward: {
+              Enabled: false,
+              StackRewards: false,
+              AlwaysSendNotifications: false,
+              Interval: 0,
+              Groups: {}
+            },
+            Discord: {
+              Enabled: false,
+              SenderName: "",
+              URL: ""
+            },
+            ItemsPerPage: 0,
+            ShopDisplayTime: 0,
+            ShopTextSize: 0,
+            DbPathOverride: "",
+            DefaultKit: "",
+            GiveDinosInCryopods: false,
+            UseSoulTraps: false,
+            CryoLimitedTime: false,
+            CryoItemPath: "",
+            UseOriginalTradeCommandWithUI: false,
+            PreventUseNoglin: false,
+            PreventUseUnconscious: false,
+            PreventUseHandcuffed: false,
+            PreventUseCarried: false
+          };
+          window.kitsVue.config.Kits = {};
+          window.kitsVue.expandedKits = {};
+          window.shopItemsVue.config.ShopItems = {};
+          window.shopItemsVue.expandedItems = {};
+          window.sellItemsVue.config.SellItems = {};
+          window.sellItemsVue.expandedSellItems = {};
+          window.messagesVue.config.Messages = {};
+        },
+        applyJSON(data) {
+          try {
             // MySQL + General
             if (data.Mysql) {
               window.generalVue.config.Mysql = data.Mysql;
@@ -1930,29 +1912,21 @@
 
             // Kits
             if (data.Kits) {
-              /*
-                Similar to Shop Items, if a kit used to have a single item blueprint,
-                we'll migrate it to an Items array. This covers older config structures.
-              */
               Object.entries(data.Kits).forEach(([kitKey, kitObj]) => {
-                // If there's no Items array but we do see single fields, create an array
+                // Migrate older single fields to Items array if needed
                 if (!Array.isArray(kitObj.Items) && (kitObj.Blueprint || kitObj.Amount || kitObj.Quality || kitObj.ForceBlueprint)) {
-                  // Migrate older single fields into new structure
-                  const arr = [];
-                  arr.push({
+                  const arr = [{
                     Blueprint: kitObj.Blueprint || '',
                     Amount: kitObj.Amount || 1,
                     Quality: kitObj.Quality || 0,
                     ForceBlueprint: !!kitObj.ForceBlueprint
-                  });
+                  }];
                   kitObj.Items = arr;
-                  // Remove old single keys
                   delete kitObj.Blueprint;
                   delete kitObj.Amount;
                   delete kitObj.Quality;
                   delete kitObj.ForceBlueprint;
                 }
-                // Make sure Items, Dinos, Commands are arrays
                 if (!Array.isArray(kitObj.Items)) kitObj.Items = [];
                 if (!Array.isArray(kitObj.Dinos)) kitObj.Dinos = [];
                 if (!Array.isArray(kitObj.Commands)) kitObj.Commands = [];
@@ -1963,7 +1937,6 @@
 
             // ShopItems
             if (data.ShopItems) {
-              // Convert single blueprint fields to an Items array for item type
               Object.entries(data.ShopItems).forEach(([key, item]) => {
                 if (item.Type === 'item') {
                   if (!Array.isArray(item.Items)) {
@@ -2003,10 +1976,11 @@
               window.messagesVue.config.Messages = data.Messages;
             }
 
-            alert("Configuration loaded successfully!");
-            this.jsonInput = "";
+            // CHANGED: Removed the success alert
+            // alert("Configuration loaded successfully!");
+
           } catch (err) {
-            alert("Error loading JSON configuration: " + err.message);
+            alert("Error applying JSON configuration: " + err.message);
           }
         }
       }
